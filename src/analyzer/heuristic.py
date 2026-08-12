@@ -12,11 +12,26 @@ from ..utils.models import Topic
 from .base import BaseAnalyzer
 
 _JP_RE = re.compile(r"[぀-ヿ一-鿿]")
+# タイトル先頭のノイズprefix（Show HN: など）
+_PREFIX_RE = re.compile(r"^\s*(show hn|ask hn|tell hn|launch hn)\s*[:：\-–—]\s*", re.I)
+# 先頭の [P] [R] [News] などのタグ
+_TAG_RE = re.compile(r"^\s*\[[^\]]+\]\s*")
 
 
 def _count_hits(text: str, signals: list[str]) -> list[str]:
     low = text.lower()
     return [s for s in signals if s.lower() in low]
+
+
+def _shorten(text: str, limit: int) -> str:
+    """語境界で切り詰め、切った場合は末尾に … を付ける。"""
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if " " in cut:
+        cut = cut[: cut.rfind(" ")]
+    return cut.rstrip(" ,.-–—:：") + "…"
 
 
 class HeuristicAnalyzer(BaseAnalyzer):
@@ -126,8 +141,14 @@ class HeuristicAnalyzer(BaseAnalyzer):
 
     @staticmethod
     def _title(topic: Topic) -> str:
-        name = topic.title.split(" — ")[0].split(":")[0].strip()
-        return f"{name[:60]} を実際に試してみた｜使い方と収益化のヒント"
+        name = topic.title
+        # 先頭のノイズ（Show HN: / [P] 等）を除去してから整形する
+        name = _PREFIX_RE.sub("", name)
+        name = _TAG_RE.sub("", name)
+        # GitHub の "owner/repo — 説明" などは前半（サービス名側）を採用
+        name = name.split(" — ")[0].strip()
+        name = _shorten(name, 48)
+        return f"{name} を実際に試してみた｜使い方と収益化のヒント"
 
     @staticmethod
     def _risks(topic: Topic, neg_hits) -> list[str]:

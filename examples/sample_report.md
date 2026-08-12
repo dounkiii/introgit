@@ -1,5 +1,5 @@
-# AIコンテンツ収益化 候補 TOP5（2026-08-13）
-> 生成日時: 2026-08-12 16:57 / 分析エンジン: `heuristic`
+# AIコンテンツ収益化 候補 TOP5（2026-08-12）
+> 生成日時: 2026-08-12 17:02 / 分析エンジン: `heuristic`
 > 収集 12 件 → 統合後 10 テーマ → 評価 10 件
 
 ---
@@ -76,7 +76,7 @@ OpenClip is an open-source, self-hostable AI tool that automatically detects and
   * 「使い方」解説（有料note化も可能）
 
 **想定タイトル：**
-「Show HN を実際に試してみた｜使い方と収益化のヒント」
+「OpenClip を実際に試してみた｜使い方と収益化のヒント」
 
 **収益化方法：**
   * 関連ツール・サービスのアフィリエイト紹介
@@ -119,7 +119,7 @@ OpenAI shipped a new autonomous agent inside ChatGPT that can open pull requests
   * 「使い方」解説（有料note化も可能）
 
 **想定タイトル：**
-「OpenAI adds Codex-style autonomous PR agent to ChatGPT for d を実際に試してみた｜使い方と収益化のヒント」
+「OpenAI adds Codex-style autonomous PR agent to… を実際に試してみた｜使い方と収益化のヒント」
 
 **収益化方法：**
   * 関連ツール・サービスのアフィリエイト紹介
@@ -164,7 +164,7 @@ Windmill 1.0 is a subscription SaaS offering AI pair-programming and code review
   * 「使い方」解説（有料note化も可能）
 
 **想定タイトル：**
-「Cursor competitor 'Windmill' hits 1.0 with AI pair-programmi を実際に試してみた｜使い方と収益化のヒント」
+「Cursor competitor 'Windmill' hits 1.0 with AI… を実際に試してみた｜使い方と収益化のヒント」
 
 **収益化方法：**
   * 関連ツール・サービスのアフィリエイト紹介
@@ -208,7 +208,7 @@ A solo founder explains how they use an LLM pipeline to research, draft, and sch
   * 「使い方」解説（有料note化も可能）
 
 **想定タイトル：**
-「How I built an AI side-business generating $4k/month with au を実際に試してみた｜使い方と収益化のヒント」
+「How I built an AI side-business generating… を実際に試してみた｜使い方と収益化のヒント」
 
 **収益化方法：**
   * 関連ツール・サービスのアフィリエイト紹介
