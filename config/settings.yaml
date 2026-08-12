@@ -1,0 +1,219 @@
+# =============================================================================
+# AI コンテンツ収益化リサーチ - 設定ファイル
+# コードを変更せず、ここだけで挙動を調整できます。
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# 取得期間（時間単位）
+# ---------------------------------------------------------------------------
+collection:
+  # 基本的に優先する期間（時間）。この範囲を主候補とする
+  primary_window_hours: 72
+  # 急上昇している場合に候補として許容する最大の古さ（時間）
+  max_window_hours: 168        # = 7日
+  # 各ソースから取得する最大件数（負荷・API制限の抑制）
+  max_items_per_source: 40
+  # HTTP リクエストのタイムアウト（秒）
+  request_timeout: 20
+  # User-Agent（Reddit などが要求）
+  user_agent: "ai-content-research-bot/1.0 (personal research; contact via .env)"
+
+# ---------------------------------------------------------------------------
+# 対象ジャンル / キーワード
+#   - 記事がAI関連かどうかの判定と、ヒューリスティック採点に使用します。
+#   - 将来ジャンルを追加する場合はここに追記するだけでOK。
+# ---------------------------------------------------------------------------
+genres:
+  # AI関連と見なすためのコアキーワード（いずれか含めばAI候補）
+  ai_keywords:
+    - "AI"
+    - "artificial intelligence"
+    - "machine learning"
+    - "生成AI"
+    - "generative ai"
+    - "LLM"
+    - "large language model"
+    - "ChatGPT"
+    - "GPT"
+    - "OpenAI"
+    - "Claude"
+    - "Anthropic"
+    - "Claude Code"
+    - "Gemini"
+    - "Codex"
+    - "Copilot"
+    - "AI agent"
+    - "AIエージェント"
+    - "agentic"
+    - "diffusion"
+    - "Stable Diffusion"
+    - "Midjourney"
+    - "Hugging Face"
+    - "Llama"
+    - "Mistral"
+    - "RAG"
+    - "fine-tuning"
+    - "prompt"
+    - "AI自動化"
+    - "AI副業"
+    - "AI SaaS"
+
+# ---------------------------------------------------------------------------
+# 採点ルール（合計100点）
+#   各配点はここで調整可能。合計が100になるよう管理してください。
+# ---------------------------------------------------------------------------
+scoring:
+  weights:
+    freshness: 20            # 鮮度
+    demand: 20               # 需要・話題性
+    japanese_competition: 15 # 日本語競合の弱さ
+    monetization: 25         # 収益性
+    content_potential: 20    # コンテンツ化しやすさ
+
+  # 鮮度の閾値（時間 -> 点）
+  freshness_thresholds:
+    - { max_hours: 24,  points: 20 }
+    - { max_hours: 72,  points: 15 }
+    - { max_hours: 168, points: 10 }
+    - { max_hours: 999999, points: 5 }
+
+  # 需要スコア: 各ソースのエンゲージメント指標を正規化して算出。
+  # ここで「満点相当」とみなす指標値（これ以上は満点扱い）を定義。
+  demand_reference:
+    hackernews_points: 300   # HN スコアがこの値で満点相当
+    reddit_score: 800        # Reddit upvote がこの値で満点相当
+    github_stars: 500        # GitHub star がこの値で満点相当
+    comments: 200            # コメント数がこの値で満点相当
+
+  # ヒューリスティック分析（LLM未使用時）で使うキーワード群
+  heuristic:
+    # 収益性が高いと判断するシグナル
+    monetization_signals:
+      - "SaaS"
+      - "pricing"
+      - "subscription"
+      - "料金"
+      - "有料"
+      - "launch"
+      - "released"
+      - "公開"
+      - "tool"
+      - "ツール"
+      - "app"
+      - "plugin"
+      - "extension"
+      - "API"
+      - "platform"
+      - "startup"
+      - "副業"
+      - "収益"
+      - "business"
+    # コンテンツ化しやすいと判断するシグナル
+    content_signals:
+      - "how to"
+      - "tutorial"
+      - "使い方"
+      - "review"
+      - "レビュー"
+      - "vs"
+      - "comparison"
+      - "比較"
+      - "guide"
+      - "tried"
+      - "試した"
+      - "build"
+      - "作った"
+      - "open source"
+      - "open-source"
+      - "self-host"
+    # 低評価にすべきノイズ（政治・炎上・芸能など）
+    negative_signals:
+      - "election"
+      - "politics"
+      - "政治"
+      - "炎上"
+      - "芸能"
+      - "celebrity"
+      - "lawsuit"
+      - "controversy"
+      - "scandal"
+      - "layoff"
+      - "stock"
+      - "株価"
+
+# ---------------------------------------------------------------------------
+# 重複統合の設定
+# ---------------------------------------------------------------------------
+deduplication:
+  # タイトル類似度（文字レベル）がこの値以上なら同一テーマと見なす（0.0-1.0）
+  title_similarity_threshold: 0.72
+  # 言い回しが異なる同一ニュース対策: 重要語の重なり(オーバーラップ係数)がこの値以上、
+  # かつ共通語数が min_shared_tokens 以上なら統合する
+  token_overlap_threshold: 0.6
+  min_shared_tokens: 3
+
+# ---------------------------------------------------------------------------
+# AI 分析（LLM）設定
+#   provider: heuristic | openai | gemini | anthropic
+#   - heuristic: LLM不要・完全無料で動作（デフォルト）
+#   - それ以外は対応する API キーを .env に設定
+# ---------------------------------------------------------------------------
+analyzer:
+  provider: "heuristic"
+  # 各プロバイダのモデル名（provider を切り替えたときに使用）
+  models:
+    openai: "gpt-4o-mini"
+    gemini: "gemini-1.5-flash"
+    anthropic: "claude-haiku-4-5-20251001"
+  # 分析にかける最大件数（コスト・時間の上限）。採点上位のみLLMへ回す
+  max_analyze: 25
+
+# ---------------------------------------------------------------------------
+# 出力設定
+# ---------------------------------------------------------------------------
+output:
+  top_n: 5
+  markdown_dir: "output"
+  json_dir: "data"
+  seen_db: "data/seen.json"   # 評価済み記事のキャッシュ（再評価防止）
+
+# ---------------------------------------------------------------------------
+# 情報源の ON/OFF と個別設定
+#   使いたくないソースは enabled: false にするだけ。
+#   新しいRSSは rss.feeds に1行足すだけで追加できます。
+# ---------------------------------------------------------------------------
+sources:
+  hackernews:
+    enabled: true
+
+  reddit:
+    enabled: true
+    subreddits:
+      - "artificial"
+      - "LocalLLaMA"
+      - "OpenAI"
+      - "ChatGPT"
+      - "ClaudeAI"
+      - "singularity"
+      - "MachineLearning"
+      - "SaaS"
+      - "aipromptprogramming"
+
+  github_trending:
+    enabled: true
+    # 検索クエリ（AI関連の新規リポジトリ）
+    query: "AI OR LLM OR agent OR ChatGPT"
+
+  producthunt:
+    enabled: true
+    rss_url: "https://www.producthunt.com/feed"
+
+  rss:
+    enabled: true
+    feeds:
+      - { name: "TechCrunch AI",       url: "https://techcrunch.com/category/artificial-intelligence/feed/" }
+      - { name: "VentureBeat AI",      url: "https://venturebeat.com/category/ai/feed/" }
+      - { name: "The Verge AI",        url: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml" }
+      - { name: "Hugging Face Blog",   url: "https://huggingface.co/blog/feed.xml" }
+      - { name: "Google AI Blog",      url: "https://blog.google/technology/ai/rss/" }
+      - { name: "MIT Tech Review AI",  url: "https://www.technologyreview.com/topic/artificial-intelligence/feed" }

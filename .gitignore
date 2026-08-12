@@ -1,0 +1,22 @@
+# 環境変数（APIキー）
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 生成物（レポート・データ・ログ・キャッシュ）
+# ※ サンプルを1つ残すため、.gitkeep と sample は除外しない
+data/*.json
+!data/.gitkeep
+output/*.md
+!output/.gitkeep
+logs/*.log
+!logs/.gitkeep
+
+# OS
+.DS_Store

@@ -1,0 +1,110 @@
+[
+  {
+    "title": "Anthropic releases Claude Code Agents SDK for building autonomous coding agents",
+    "url": "https://www.anthropic.com/news/claude-code-agents-sdk",
+    "source": "Hacker News",
+    "published_hours_ago": 8,
+    "summary": "Anthropic launched an official Agents SDK for Claude Code, letting developers build autonomous multi-step coding agents with tool use, subagents, and background tasks. Includes pricing tiers and a free hobby plan.",
+    "author": "anthropic",
+    "metrics": { "points": 412, "comments": 190 }
+  },
+  {
+    "title": "Claude Code Agents SDK is here — build your own coding agents",
+    "url": "https://www.reddit.com/r/ClaudeAI/comments/abc123",
+    "source": "Reddit r/ClaudeAI",
+    "published_hours_ago": 6,
+    "summary": "Discussion thread on the new Claude Code Agents SDK. People are sharing early automation workflows and subagent setups.",
+    "author": "some_user",
+    "metrics": { "score": 640, "comments": 210 }
+  },
+  {
+    "title": "Show HN: OpenClip — open-source AI video editor that auto-cuts highlights",
+    "url": "https://github.com/openclip/openclip",
+    "source": "GitHub Trending",
+    "published_hours_ago": 20,
+    "summary": "OpenClip is an open-source, self-hostable AI tool that automatically detects and cuts highlight clips from long videos. MIT licensed. Great for creators repurposing YouTube content into shorts.",
+    "author": "openclip",
+    "metrics": { "stars": 340, "comments": 45 }
+  },
+  {
+    "title": "Google announces Gemini 3 Flash with 2M token context and tool-use pricing update",
+    "url": "https://blog.google/technology/ai/gemini-3-flash",
+    "source": "Google AI Blog",
+    "published_hours_ago": 30,
+    "summary": "Google released Gemini 3 Flash, featuring a 2M token context window, native tool use, and a cheaper subscription tier aimed at developers and SaaS builders.",
+    "author": "Google",
+    "metrics": {}
+  },
+  {
+    "title": "Gemini 3 Flash launch — 2M context, cheaper API",
+    "url": "https://techcrunch.com/2026/08/11/gemini-3-flash",
+    "source": "TechCrunch AI",
+    "published_hours_ago": 28,
+    "summary": "TechCrunch covers the Gemini 3 Flash launch and what the new pricing means for AI startups.",
+    "author": "TechCrunch",
+    "metrics": {}
+  },
+  {
+    "title": "Cursor competitor 'Windmill' hits 1.0 with AI pair-programming for teams",
+    "url": "https://www.producthunt.com/posts/windmill-ai",
+    "source": "Product Hunt",
+    "published_hours_ago": 14,
+    "summary": "Windmill 1.0 is a subscription SaaS offering AI pair-programming and code review for engineering teams. Paid plans start at $20/month per seat.",
+    "author": "windmill",
+    "metrics": { "score": 220, "comments": 30 }
+  },
+  {
+    "title": "How I built an AI side-business generating $4k/month with automated newsletters",
+    "url": "https://www.reddit.com/r/SaaS/comments/def456",
+    "source": "Reddit r/SaaS",
+    "published_hours_ago": 40,
+    "summary": "A solo founder explains how they use an LLM pipeline to research, draft, and schedule niche newsletters, monetized via affiliate links and paid subscriptions.",
+    "author": "indie_hacker",
+    "metrics": { "score": 510, "comments": 120 }
+  },
+  {
+    "title": "New open-source RAG framework 'Haystack-Lite' makes local document QA trivial",
+    "url": "https://github.com/haystack-lite/haystack-lite",
+    "source": "GitHub Trending",
+    "published_hours_ago": 55,
+    "summary": "Haystack-Lite is a minimal, self-hostable RAG framework for building document Q&A over your own files. Runs fully offline with local models.",
+    "author": "haystack-lite",
+    "metrics": { "stars": 180, "comments": 22 }
+  },
+  {
+    "title": "OpenAI adds Codex-style autonomous PR agent to ChatGPT for developers",
+    "url": "https://openai.com/blog/chatgpt-pr-agent",
+    "source": "Hacker News",
+    "published_hours_ago": 12,
+    "summary": "OpenAI shipped a new autonomous agent inside ChatGPT that can open pull requests, run tests, and iterate on feedback. Available on the Plus and Pro subscription tiers.",
+    "author": "openai",
+    "metrics": { "points": 305, "comments": 140 }
+  },
+  {
+    "title": "US election polling shows tight race in swing states",
+    "url": "https://example-news.com/election-polls",
+    "source": "Hacker News",
+    "published_hours_ago": 10,
+    "summary": "Latest polling data on the upcoming election. Not AI related, included to test filtering and negative signals.",
+    "author": "politics_desk",
+    "metrics": { "points": 90, "comments": 400 }
+  },
+  {
+    "title": "AI controversy: startup faces lawsuit over scraped training data",
+    "url": "https://example-news.com/ai-lawsuit",
+    "source": "TechCrunch AI",
+    "published_hours_ago": 18,
+    "summary": "An AI startup is embroiled in a lawsuit and public controversy over how it scraped training data. Mostly drama, little practical value.",
+    "author": "legal_desk",
+    "metrics": {}
+  },
+  {
+    "title": "Perplexity launches affiliate program for its Pro AI search subscription",
+    "url": "https://www.perplexity.ai/blog/affiliate-program",
+    "source": "Product Hunt",
+    "published_hours_ago": 34,
+    "summary": "Perplexity introduced an affiliate program that pays recurring commission for referrals to its Pro subscription, a paid AI search product.",
+    "author": "perplexity",
+    "metrics": { "score": 160, "comments": 18 }
+  }
+]

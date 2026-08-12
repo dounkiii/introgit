@@ -1,0 +1,219 @@
+{
+  "generated_at": "2026-08-12T16:57:14.720665+00:00",
+  "meta": {
+    "provider": "heuristic",
+    "collected": 12,
+    "before_dedup": 12,
+    "after_dedup": 10,
+    "analyzed": 10,
+    "errors": 0
+  },
+  "top": [
+    {
+      "rank": 1,
+      "title": "Claude Code Agents SDK is here — build your own coding agents",
+      "summary": "Anthropic launched an official Agents SDK for Claude Code, letting developers build autonomous multi-step coding agents with tool use, subagents, and background tasks. Includes pricing tiers and a free hobby plan.（情報源: Reddit r/ClaudeAI、Hacker News）",
+      "suggested_title": "Claude Code Agents SDK is here を実際に試してみた｜使い方と収益化のヒント",
+      "score_total": 84.6,
+      "score_freshness": 20.0,
+      "score_demand": 20.0,
+      "score_japanese_competition": 11.2,
+      "score_monetization": 23.8,
+      "score_content_potential": 9.6,
+      "reasons": [
+        "公開されたばかり（24時間以内）",
+        "海外発で日本語情報が少ない可能性が高い",
+        "複数ソースで言及されている（2ソース）",
+        "コミュニティで反応が大きい（指標合計 1452）",
+        "収益化と相性の良いキーワードを含む"
+      ],
+      "monetization_ideas": [
+        "関連ツール・サービスのアフィリエイト紹介",
+        "有料noteでの深掘り解説",
+        "関連書籍・オンライン講座の紹介"
+      ],
+      "content_ideas": [
+        "無料ブログ記事",
+        "X（旧Twitter）投稿",
+        "「使い方」解説（有料note化も可能）"
+      ],
+      "risks": [
+        "一時的な話題で終わる可能性がある"
+      ],
+      "sources": [
+        "Reddit r/ClaudeAI",
+        "Hacker News"
+      ],
+      "source_urls": [
+        "https://www.reddit.com/r/ClaudeAI/comments/abc123",
+        "https://www.anthropic.com/news/claude-code-agents-sdk"
+      ],
+      "discovered_at": "2026-08-12T16:57:14.704325+00:00",
+      "published_at": "2026-08-12T10:57:14.703961+00:00"
+    },
+    {
+      "rank": 2,
+      "title": "Show HN: OpenClip — open-source AI video editor that auto-cuts highlights",
+      "summary": "OpenClip is an open-source, self-hostable AI tool that automatically detects and cuts highlight clips from long videos. MIT licensed. Great for creators repurposing YouTube content into shorts.（情報源: GitHub Trending）",
+      "suggested_title": "Show HN を実際に試してみた｜使い方と収益化のヒント",
+      "score_total": 74.5,
+      "score_freshness": 20.0,
+      "score_demand": 13.6,
+      "score_japanese_competition": 14.2,
+      "score_monetization": 12.5,
+      "score_content_potential": 14.2,
+      "reasons": [
+        "公開されたばかり（24時間以内）",
+        "海外発で日本語情報が少ない可能性が高い",
+        "コミュニティで反応が大きい（指標合計 385）",
+        "収益化と相性の良いキーワードを含む"
+      ],
+      "monetization_ideas": [
+        "関連ツール・サービスのアフィリエイト紹介",
+        "有料noteでの深掘り解説",
+        "関連書籍・オンライン講座の紹介"
+      ],
+      "content_ideas": [
+        "無料ブログ記事",
+        "X（旧Twitter）投稿",
+        "実際に試したレビュー記事",
+        "「使い方」解説（有料note化も可能）"
+      ],
+      "risks": [
+        "情報源が単一でまだ裏取りが少ない",
+        "一時的な話題で終わる可能性がある"
+      ],
+      "sources": [
+        "GitHub Trending"
+      ],
+      "source_urls": [
+        "https://github.com/openclip/openclip"
+      ],
+      "discovered_at": "2026-08-12T16:57:14.706634+00:00",
+      "published_at": "2026-08-11T20:57:14.703961+00:00"
+    },
+    {
+      "rank": 3,
+      "title": "OpenAI adds Codex-style autonomous PR agent to ChatGPT for developers",
+      "summary": "OpenAI shipped a new autonomous agent inside ChatGPT that can open pull requests, run tests, and iterate on feedback. Available on the Plus and Pro subscription tiers.（情報源: Hacker News）",
+      "suggested_title": "OpenAI adds Codex-style autonomous PR agent to ChatGPT for d を実際に試してみた｜使い方と収益化のヒント",
+      "score_total": 74.4,
+      "score_freshness": 20.0,
+      "score_demand": 20.0,
+      "score_japanese_competition": 11.2,
+      "score_monetization": 16.2,
+      "score_content_potential": 7.0,
+      "reasons": [
+        "公開されたばかり（24時間以内）",
+        "海外発で日本語情報が少ない可能性が高い",
+        "コミュニティで反応が大きい（指標合計 445）",
+        "収益化と相性の良いキーワードを含む"
+      ],
+      "monetization_ideas": [
+        "関連ツール・サービスのアフィリエイト紹介",
+        "有料noteでの深掘り解説",
+        "継続課金SaaSの紹介・比較（月額サービスの成約狙い）",
+        "関連書籍・オンライン講座の紹介"
+      ],
+      "content_ideas": [
+        "無料ブログ記事",
+        "X（旧Twitter）投稿",
+        "「使い方」解説（有料note化も可能）"
+      ],
+      "risks": [
+        "情報源が単一でまだ裏取りが少ない",
+        "一時的な話題で終わる可能性がある"
+      ],
+      "sources": [
+        "Hacker News"
+      ],
+      "source_urls": [
+        "https://openai.com/blog/chatgpt-pr-agent"
+      ],
+      "discovered_at": "2026-08-12T16:57:14.707734+00:00",
+      "published_at": "2026-08-12T04:57:14.703961+00:00"
+    },
+    {
+      "rank": 4,
+      "title": "Cursor competitor 'Windmill' hits 1.0 with AI pair-programming for teams",
+      "summary": "Windmill 1.0 is a subscription SaaS offering AI pair-programming and code review for engineering teams. Paid plans start at $20/month per seat.（情報源: Product Hunt）",
+      "suggested_title": "Cursor competitor 'Windmill' hits 1.0 with AI pair-programmi を実際に試してみた｜使い方と収益化のヒント",
+      "score_total": 71.3,
+      "score_freshness": 20.0,
+      "score_demand": 5.5,
+      "score_japanese_competition": 14.2,
+      "score_monetization": 20.0,
+      "score_content_potential": 11.6,
+      "reasons": [
+        "公開されたばかり（24時間以内）",
+        "海外発で日本語情報が少ない可能性が高い",
+        "コミュニティで反応が大きい（指標合計 250）",
+        "収益化と相性の良いキーワードを含む"
+      ],
+      "monetization_ideas": [
+        "関連ツール・サービスのアフィリエイト紹介",
+        "有料noteでの深掘り解説",
+        "継続課金SaaSの紹介・比較（月額サービスの成約狙い）",
+        "関連書籍・オンライン講座の紹介"
+      ],
+      "content_ideas": [
+        "無料ブログ記事",
+        "X（旧Twitter）投稿",
+        "実際に試したレビュー記事",
+        "「使い方」解説（有料note化も可能）"
+      ],
+      "risks": [
+        "情報源が単一でまだ裏取りが少ない",
+        "一時的な話題で終わる可能性がある"
+      ],
+      "sources": [
+        "Product Hunt"
+      ],
+      "source_urls": [
+        "https://www.producthunt.com/posts/windmill-ai"
+      ],
+      "discovered_at": "2026-08-12T16:57:14.709279+00:00",
+      "published_at": "2026-08-12T02:57:14.703961+00:00"
+    },
+    {
+      "rank": 5,
+      "title": "How I built an AI side-business generating $4k/month with automated newsletters",
+      "summary": "A solo founder explains how they use an LLM pipeline to research, draft, and schedule niche newsletters, monetized via affiliate links and paid subscriptions.（情報源: Reddit r/SaaS）",
+      "suggested_title": "How I built an AI side-business generating $4k/month with au を実際に試してみた｜使い方と収益化のヒント",
+      "score_total": 66.0,
+      "score_freshness": 15.0,
+      "score_demand": 12.8,
+      "score_japanese_competition": 11.2,
+      "score_monetization": 20.0,
+      "score_content_potential": 7.0,
+      "reasons": [
+        "直近3日以内の新しい話題",
+        "海外発で日本語情報が少ない可能性が高い",
+        "コミュニティで反応が大きい（指標合計 630）",
+        "収益化と相性の良いキーワードを含む"
+      ],
+      "monetization_ideas": [
+        "関連ツール・サービスのアフィリエイト紹介",
+        "有料noteでの深掘り解説",
+        "継続課金SaaSの紹介・比較（月額サービスの成約狙い）",
+        "関連書籍・オンライン講座の紹介"
+      ],
+      "content_ideas": [
+        "無料ブログ記事",
+        "X（旧Twitter）投稿",
+        "「使い方」解説（有料note化も可能）"
+      ],
+      "risks": [
+        "情報源が単一でまだ裏取りが少ない"
+      ],
+      "sources": [
+        "Reddit r/SaaS"
+      ],
+      "source_urls": [
+        "https://www.reddit.com/r/SaaS/comments/def456"
+      ],
+      "discovered_at": "2026-08-12T16:57:14.705615+00:00",
+      "published_at": "2026-08-11T00:57:14.703961+00:00"
+    }
+  ]
+}

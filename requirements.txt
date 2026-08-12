@@ -1,0 +1,10 @@
+# --- 必須（無料・キー不要の最小構成で動作） ---
+requests>=2.31.0
+feedparser>=6.0.11
+PyYAML>=6.0.1
+python-dotenv>=1.0.1
+
+# --- 任意（LLM分析を使う場合のみ。使うプロバイダのものだけでOK） ---
+# openai>=1.30.0
+# google-generativeai>=0.7.0
+# anthropic>=0.34.0
