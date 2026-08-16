@@ -327,17 +327,38 @@ function copyToClipboard(text, message) {
   }
 }
 
-function saveTxt() {
-  const blob = new Blob([buildText()], { type: 'text/plain;charset=utf-8' });
+function saveTxtViaLink(text, filename) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'answers-' + timestampForFile() + '.txt';
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   toast('TXTを保存しました');
+}
+
+function saveTxt() {
+  const text = buildText();
+  const filename = 'answers-' + timestampForFile() + '.txt';
+
+  // ダウンロードが直接できない環境（埋め込み表示など）では、
+  // 用意されている保存APIがあればそちらを使う
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('downloads').then(function (downloads) {
+      if (!downloads) { saveTxtViaLink(text, filename); return; }
+      downloads.save({ filename: filename, data: text }).then(function () {
+        toast('TXTを保存しました');
+      }).catch(function (err) {
+        toast(err && err.code === 'declined' ? '保存をやめました' : 'TXTを保存できませんでした');
+      });
+    }).catch(function () { saveTxtViaLink(text, filename); });
+    return;
+  }
+
+  saveTxtViaLink(text, filename);
 }
 
 let toastTimer = null;
