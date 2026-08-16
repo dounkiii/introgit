@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f1ef">
+<title>あなたのこと、もう少し知りたい。</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23a8617b' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<main class="app">
+
+  <!-- ================= トップ ================= -->
+  <section class="screen screen--start is-active" id="screen-start">
+    <div class="start__inner">
+      <p class="mark start__mark" aria-hidden="true"><i></i><i></i></p>
+      <h1 class="start__title">あなたのこと、<br>もう少し知りたい。</h1>
+      <p class="start__lead">15問・約2分。直感で選んでね。</p>
+
+      <div class="start__actions">
+        <button class="btn btn--primary" id="btn-start" type="button">はじめる</button>
+
+        <div class="resume" id="resume-box" hidden>
+          <p class="resume__text" id="resume-text">前回の続きがあります。</p>
+          <button class="btn btn--ghost" id="btn-resume" type="button">続きから</button>
+          <button class="btn btn--text" id="btn-restart-start" type="button">最初からやり直す</button>
+        </div>
+      </div>
+
+      <p class="start__note">回答はこの端末の中だけに保存されます。</p>
+    </div>
+  </section>
+
+  <!-- ================= 設問 ================= -->
+  <section class="screen screen--quiz" id="screen-quiz">
+    <header class="topbar">
+      <button class="iconbtn" id="btn-back" type="button" aria-label="前の質問へ戻る">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <div class="progress">
+        <div class="progress__bar"><span class="progress__fill" id="progress-fill"></span></div>
+        <p class="progress__count" id="progress-count">1 / 15</p>
+      </div>
+    </header>
+
+    <div class="qwrap" id="qwrap">
+      <p class="milestone" id="milestone" hidden></p>
+      <div class="qtext">
+        <div class="qtext__scene" id="q-scene"></div>
+        <h2 class="qtext__ask" id="q-ask"></h2>
+      </div>
+      <div class="options" id="options"></div>
+    </div>
+  </section>
+
+  <!-- ================= 任意の自由記述 ================= -->
+  <section class="screen screen--free" id="screen-free">
+    <header class="topbar">
+      <button class="iconbtn" id="btn-back-free" type="button" aria-label="前の質問へ戻る">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg>
+      </button>
+      <div class="progress">
+        <div class="progress__bar"><span class="progress__fill" style="width:100%"></span></div>
+        <p class="progress__count">15 / 15</p>
+      </div>
+    </header>
+
+    <div class="qwrap">
+      <p class="milestone milestone--static" id="free-lead"></p>
+      <div class="qtext">
+        <h2 class="qtext__ask" id="free-ask"></h2>
+        <p class="qtext__note" id="free-note"></p>
+      </div>
+      <textarea class="freetext" id="freetext" rows="5"></textarea>
+      <div class="free__actions">
+        <button class="btn btn--primary" id="btn-free-done" type="button">これで完了</button>
+        <button class="btn btn--skip" id="btn-skip" type="button">スキップ</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 完了 ================= -->
+  <section class="screen screen--done" id="screen-done">
+    <div class="done__inner">
+      <p class="mark done__mark" aria-hidden="true"><i></i><i></i></p>
+      <h2 class="done__title">ありがとう。<br>おつかれさま。</h2>
+      <p class="done__lead">15問、ぜんぶ答えてくれました。</p>
+
+      <div class="done__actions">
+        <button class="btn btn--primary" id="btn-copy" type="button">回答をコピー</button>
+        <div class="done__row">
+          <button class="btn btn--ghost" id="btn-copy-json" type="button">JSONをコピー</button>
+          <button class="btn btn--ghost" id="btn-save-txt" type="button">TXTで保存</button>
+        </div>
+        <button class="btn btn--text" id="btn-review" type="button">回答を見直す</button>
+        <button class="btn btn--text" id="btn-restart-done" type="button">最初からやり直す</button>
+      </div>
+
+      <details class="preview">
+        <summary>コピーされる内容を見る</summary>
+        <pre id="preview-text"></pre>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
