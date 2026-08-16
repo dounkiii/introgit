@@ -1,6 +1,7 @@
 /* =========================================================
    状態管理
-   - 回答は localStorage にだけ保存する（外部送信はしない）
+   - 回答は常に localStorage に保存する（途中保存・再開のため）
+   - 外部への送信は config.js の SUBMIT_CONFIG が 'off' 以外のときだけ行う
    - アプリ側では回答の判定・分類・ラベル付けは一切行わない
    ========================================================= */
 
@@ -25,6 +26,7 @@ function emptyState() {
     free: '',
     index: 0,
     completed: false,
+    sent: false,      // 送信先へ保存済みかどうか
     startedAt: null,
     updatedAt: null
   };
@@ -53,6 +55,7 @@ function loadState() {
     parsed.free = typeof parsed.free === 'string' ? parsed.free : '';
     parsed.index = clamp(parsed.index || 0, 0, QUESTIONS.length - 1);
     parsed.completed = !!parsed.completed;
+    parsed.sent = !!parsed.sent;
     return parsed;
   } catch (e) {
     return null;
@@ -104,6 +107,8 @@ const el = {
   freeNote:    document.getElementById('free-note'),
   freetext:    document.getElementById('freetext'),
   preview:     document.getElementById('preview-text'),
+  startNote:   document.getElementById('start-note'),
+  sendStatus:  document.getElementById('send-status'),
   toast:       document.getElementById('toast')
 };
 
@@ -256,9 +261,12 @@ function openFree() {
 function finish(keepFree) {
   state.free = keepFree ? el.freetext.value.trim() : '';
   state.completed = true;
+  state.sent = false;
   saveState();
   el.preview.textContent = buildText();
+  setSendStatus('');
   show('done');
+  sendAnswers();
 }
 
 /* =========================================================
@@ -277,8 +285,8 @@ function buildText() {
   return blocks.join('\n\n') + '\n';
 }
 
-function buildJson() {
-  return JSON.stringify({
+function buildPayload() {
+  return {
     version: SCHEMA_VERSION,
     answeredAt: state.updatedAt || new Date().toISOString(),
     answers: QUESTIONS.map(function (q, i) {
@@ -294,7 +302,76 @@ function buildJson() {
       question: OPTIONAL_QUESTION.ask,
       answer: state.free || null
     }
-  }, null, 2);
+  };
+}
+
+function buildJson() {
+  return JSON.stringify(buildPayload(), null, 2);
+}
+
+/* =========================================================
+   回答の送信（config.js の SUBMIT_CONFIG で設定）
+   - mode が 'off' のときは何も送らない
+   - 送信できなかった回答は localStorage に残り、次に開いたとき再送する
+   ========================================================= */
+function submitMode() {
+  return (typeof SUBMIT_CONFIG === 'object' && SUBMIT_CONFIG && SUBMIT_CONFIG.mode) || 'off';
+}
+
+function submitEnabled() {
+  return submitMode() !== 'off';
+}
+
+function postToNetlify() {
+  const body = new URLSearchParams({
+    'form-name': SUBMIT_CONFIG.formName || 'quiz-answers',
+    submittedAt: new Date().toISOString(),
+    answers: buildText(),
+    json: JSON.stringify(buildPayload())
+  });
+  return fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  }).then(function (res) {
+    if (!res.ok) throw new Error('status ' + res.status);
+  });
+}
+
+function postToEndpoint() {
+  // text/plain で送ると preflight が起きず、Apps Script などでもそのまま受け取れる
+  return fetch(SUBMIT_CONFIG.endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ text: buildText(), data: buildPayload() })
+  }).then(function (res) {
+    if (!res.ok) throw new Error('status ' + res.status);
+  });
+}
+
+function setSendStatus(message) {
+  if (!message) {
+    el.sendStatus.hidden = true;
+    return;
+  }
+  el.sendStatus.textContent = message;
+  el.sendStatus.hidden = false;
+}
+
+function sendAnswers() {
+  if (!submitEnabled() || !state.completed || state.sent) return;
+
+  setSendStatus('送信中…');
+  const request = submitMode() === 'netlify' ? postToNetlify() : postToEndpoint();
+
+  request.then(function () {
+    state.sent = true;
+    saveState();
+    setSendStatus('回答を送信しました。');
+  }).catch(function () {
+    // 回答自体は端末に残っているので、次に開いたときにもう一度試す
+    setSendStatus('うまく送れませんでした。あとでもう一度試します。');
+  });
 }
 
 function timestampForFile() {
@@ -398,7 +475,9 @@ function restart() {
 function resume() {
   if (state.completed) {
     el.preview.textContent = buildText();
+    setSendStatus('');
     show('done');
+    sendAnswers();
     return;
   }
   // 未回答の最初の設問から再開する
@@ -455,6 +534,9 @@ document.getElementById('btn-review').addEventListener('click', function () {
   const saved = loadState();
   if (saved) state = saved;
   el.freetext.value = state.free || '';
+  el.startNote.textContent = submitEnabled()
+    ? '回答は最後にまとめて送られます。'
+    : '回答はこの端末の中だけに保存されます。';
   refreshStart();
   show('start');
 })();

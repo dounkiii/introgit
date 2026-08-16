@@ -26,7 +26,7 @@ def build() -> str:
         '<link rel="stylesheet" href="styles.css">',
         "<style>\n" + read("styles.css") + "</style>",
     )
-    for src in ("questions.js", "app.js"):
+    for src in ("config.js", "questions.js", "app.js"):
         html = html.replace(
             '<script src="%s"></script>' % src,
             "<script>\n" + read(src) + "</script>",

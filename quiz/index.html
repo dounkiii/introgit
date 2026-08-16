@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <p class="start__note">回答はこの端末の中だけに保存されます。</p>
+      <p class="start__note" id="start-note">回答はこの端末の中だけに保存されます。</p>
     </div>
   </section>
 
@@ -87,6 +87,7 @@
       <p class="mark done__mark" aria-hidden="true"><i></i><i></i></p>
       <h2 class="done__title">ありがとう。<br>おつかれさま。</h2>
       <p class="done__lead">15問、ぜんぶ答えてくれました。</p>
+      <p class="done__status" id="send-status" hidden></p>
 
       <div class="done__actions">
         <button class="btn btn--primary" id="btn-copy" type="button">回答をコピー</button>
@@ -109,6 +110,15 @@
 
 <p class="toast" id="toast" role="status" aria-live="polite"></p>
 
+<!-- Netlify Forms 用の受け口。mode:'netlify' のときだけ使われます -->
+<form name="quiz-answers" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="text" name="submittedAt">
+  <input type="text" name="bot-field">
+  <textarea name="answers"></textarea>
+  <textarea name="json"></textarea>
+</form>
+
+<script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="app.js"></script>
 </body>

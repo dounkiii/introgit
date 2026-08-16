@@ -22,7 +22,10 @@ python3 -m http.server 8000
 | `index.html` | 画面の骨組み（トップ / 設問 / 任意の自由記述 / 完了） |
 | `styles.css` | デザイン。ライト・ダーク両対応、スマホファースト |
 | `questions.js` | **質問データ**。ここだけ編集すれば設問を差し替えられる |
-| `app.js` | 進行・保存・出力のロジック |
+| `config.js` | **回答の送信先設定**。既定は送信なし |
+| `app.js` | 進行・保存・出力・送信のロジック |
+| `build-standalone.py` | 上記を1枚のHTMLにまとめる（`standalone.html` を生成） |
+| `server/apps-script.gs` | 回答をスプレッドシートに記録する受け口（任意） |
 
 ## 質問の変更
 
@@ -79,3 +82,43 @@ JSON は設問ID・質問文・選択肢一覧・選んだindex・選んだ本�
 
 - キー: `love-quiz.state.v3`
 - 起動時に旧バージョンのキー（`LEGACY_KEYS`）は削除されます。
+
+---
+
+## 回答を手元に集めたい場合（任意）
+
+既定（`config.js` の `mode: 'off'`）では、回答は答えた人の端末から外に出ません。
+別の人に答えてもらってその回答を集めたい場合は、送信先を設定します。
+
+送信を有効にすると、トップ画面の注意書きは自動で
+「回答は最後にまとめて送られます。」に変わります。
+送信に失敗した回答は端末に残り、**次にページを開いたときに自動で再送**されます。
+
+> 注意: claude.ai の Artifact として公開したページは、CSPにより外部への送信が
+> すべてブロックされます。送信を使う場合は通常のホスティング（Netlify、
+> Cloudflare Pages、GitHub Pages など）に置いてください。
+
+### A. Netlify に置く場合（最短）
+
+1. `python3 quiz/build-standalone.py` で `standalone.html` を生成
+2. `index.html` という名前でフォルダに入れ、[Netlify Drop](https://app.netlify.com/drop) にドラッグ&ドロップ
+3. `config.js`（standalone.html なら該当箇所）を次のように変更して再デプロイ
+
+```js
+const SUBMIT_CONFIG = { mode: 'netlify', endpoint: '', formName: 'quiz-answers' };
+```
+
+回答は Netlify の管理画面 **Forms → quiz-answers** に1件ずつ溜まります。
+`answers` 欄に質問文つきの全文、`json` 欄に構造化データが入ります。
+Site settings → Forms → Form notifications でメール通知も設定できます。
+
+### B. スプレッドシートに記録する場合
+
+`server/apps-script.gs` の手順どおりに Google Apps Script をデプロイし、
+発行されたURLを設定します。
+
+```js
+const SUBMIT_CONFIG = { mode: 'endpoint', endpoint: 'https://script.google.com/macros/s/..../exec', formName: '' };
+```
+
+1回答 = スプレッドシート1行として追記されます（列見出しは質問文）。

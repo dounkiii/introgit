@@ -415,9 +415,17 @@ body::before {
 
 .done__mark { margin: 0 0 26px; }
 .done__title { margin: 0 0 14px; font-size: 25px; line-height: 1.6; font-weight: 600; }
-.done__lead  { margin: 0 0 38px; color: var(--ink-mid); font-size: 15px; }
+.done__lead  { margin: 0 0 14px; color: var(--ink-mid); font-size: 15px; }
 
-.done__actions { display: grid; gap: 12px; }
+.done__status {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  letter-spacing: .04em;
+  animation: pop-in .4s var(--ease) both;
+}
+
+.done__actions { display: grid; gap: 12px; margin-top: 24px; }
 .done__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .done__row .btn { padding: 15px 10px; font-size: 15px; }
 
