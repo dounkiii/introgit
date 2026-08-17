@@ -1,0 +1,38 @@
+name: Deploy quiz to Pages
+
+# quiz/ の中身を GitHub Pages として公開する。
+# サイトのルートが quiz/index.html になる。
+on:
+  push:
+    branches: ["claude/personality-love-quiz-redesign-oqfjlc"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pages が未設定の場合はここで有効化する
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: quiz
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
