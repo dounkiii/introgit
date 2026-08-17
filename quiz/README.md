@@ -3,7 +3,25 @@
 スマホ向けの静的Webアプリです。全15問の選択式＋最後に1問だけ任意の自由記述。
 回答は端末の `localStorage` にのみ保存され、外部サーバーへは一切送信しません。
 
-## 使い方
+## 公開する（ログイン不要のURLにする）
+
+このリポジトリは公開設定なので、GitHub Pages を有効にすればそのまま誰でも開けます。
+
+1. GitHub の **Settings → Pages** を開く
+2. Source を **Deploy from a branch**
+3. Branch に公開したいブランチ、フォルダは **/ (root)** を選んで **Save**
+4. 1〜2分待つと公開される
+
+```
+https://dounkiii.github.io/introgit/quiz/
+```
+
+Claudeのログインは不要で、LINEでそのまま送れます。
+ただし GitHub Pages は静的配信のみなので、回答をこちらに集めたい場合は
+下の「回答を手元に集めたい場合」の **B（スプレッドシート）** を併用してください。
+（Netlify Forms は Netlify に置いた場合だけ使えます）
+
+## 使い方（ローカル）
 
 `quiz/index.html` をブラウザで開くだけで動きます（ビルド不要・依存ライブラリなし）。
 
@@ -95,8 +113,14 @@ JSON は設問ID・質問文・選択肢一覧・選んだindex・選んだ本�
 送信に失敗した回答は端末に残り、**次にページを開いたときに自動で再送**されます。
 
 > 注意: claude.ai の Artifact として公開したページは、CSPにより外部への送信が
-> すべてブロックされます。送信を使う場合は通常のホスティング（Netlify、
-> Cloudflare Pages、GitHub Pages など）に置いてください。
+> すべてブロックされます。送信を使う場合は通常のホスティング（GitHub Pages、
+> Netlify、Cloudflare Pages など）に置いてください。
+
+| 置き場所 | ログイン不要のURL | 回答の保存 |
+| --- | --- | --- |
+| GitHub Pages | ○ | B（スプレッドシート）のみ |
+| Netlify | ○ | A・B どちらも可 |
+| claude.ai の Artifact | × | 不可（外部送信がブロックされる） |
 
 ### A. Netlify に置く場合（最短）
 
