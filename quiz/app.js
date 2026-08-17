@@ -338,6 +338,21 @@ function postToNetlify() {
   });
 }
 
+function postToAppsScript() {
+  // Google Apps Script のWebアプリ上では、CORSを介さず直接関数を呼べる
+  return new Promise(function (resolve, reject) {
+    const bridge = window.google && window.google.script && window.google.script.run;
+    if (!bridge) {
+      reject(new Error('apps script bridge is unavailable'));
+      return;
+    }
+    window.google.script.run
+      .withSuccessHandler(function () { resolve(); })
+      .withFailureHandler(function (err) { reject(err); })
+      .saveAnswers({ text: buildText(), data: buildPayload() });
+  });
+}
+
 function postToEndpoint() {
   // text/plain で送ると preflight が起きず、Apps Script などでもそのまま受け取れる
   return fetch(SUBMIT_CONFIG.endpoint, {
@@ -362,7 +377,10 @@ function sendAnswers() {
   if (!submitEnabled() || !state.completed || state.sent) return;
 
   setSendStatus('送信中…');
-  const request = submitMode() === 'netlify' ? postToNetlify() : postToEndpoint();
+  const mode = submitMode();
+  const request = mode === 'netlify'     ? postToNetlify()
+                : mode === 'apps-script' ? postToAppsScript()
+                :                          postToEndpoint();
 
   request.then(function () {
     state.sent = true;

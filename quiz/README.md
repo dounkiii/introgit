@@ -1,9 +1,35 @@
 # 性格・恋愛観アンケート（15問）
 
 スマホ向けの静的Webアプリです。全15問の選択式＋最後に1問だけ任意の自由記述。
-回答は端末の `localStorage` にのみ保存され、外部サーバーへは一切送信しません。
+回答は端末の `localStorage` に保存されます。既定では外部へ一切送信せず、
+`config.js` で送信先を設定したときだけ送信します。
 
-## 公開する（ログイン不要のURLにする）
+## 公開する（Googleスプレッドシートだけで完結する方法）
+
+**ログイン不要のURL** と **回答の自動記録** を、Googleアカウントだけで両方まかなえます。
+Apps Script のウェブアプリはページ自体を配信できるので、他のホスティングは不要です。
+
+必要なファイルは `gas/` に入っています。手順は `gas/Code.gs` の先頭コメントに
+そのまま書いてありますが、要点は次の6つです。
+
+1. Googleスプレッドシートを新規作成
+2. **拡張機能 → Apps Script**
+3. `コード.gs` の中身を消して `gas/Code.gs` を貼り付け
+4. 左の「ファイル」＋ → **HTML** → 名前を `index` にして `gas/index.html` を貼り付け
+5. **デプロイ → 新しいデプロイ → ウェブアプリ**
+   - 次のユーザーとして実行: **自分**
+   - アクセスできるユーザー: **全員** ← これでログイン不要になる
+6. 出てきた `https://script.google.com/macros/s/..../exec` が公開URL
+
+回答が終わると、そのスプレッドシートに1行ずつ自動で追記されます（列見出しは質問文）。
+
+`gas/index.html` は生成物です。質問を変えたら次のコマンドで作り直してください。
+
+```bash
+python3 quiz/build-standalone.py --submit-mode apps-script -o gas/index.html
+```
+
+## 公開する（GitHub Pages を使う場合）
 
 このリポジトリは公開設定なので、GitHub Pages を有効にすればそのまま誰でも開けます。
 
@@ -43,7 +69,9 @@ python3 -m http.server 8000
 | `config.js` | **回答の送信先設定**。既定は送信なし |
 | `app.js` | 進行・保存・出力・送信のロジック |
 | `build-standalone.py` | 上記を1枚のHTMLにまとめる（`standalone.html` を生成） |
-| `server/apps-script.gs` | 回答をスプレッドシートに記録する受け口（任意） |
+| `gas/Code.gs` | Apps Script用。アンケートの配信＋スプレッドシートへの記録 |
+| `gas/index.html` | Apps Scriptに貼る単一HTML（生成物） |
+| `server/apps-script.gs` | 外部ホスティングから回答を受け取る場合の受け口（任意） |
 
 ## 質問の変更
 
@@ -118,6 +146,7 @@ JSON は設問ID・質問文・選択肢一覧・選んだindex・選んだ本�
 
 | 置き場所 | ログイン不要のURL | 回答の保存 |
 | --- | --- | --- |
+| Apps Script ウェブアプリ | ○ | スプレッドシートに自動記録 |
 | GitHub Pages | ○ | B（スプレッドシート）のみ |
 | Netlify | ○ | A・B どちらも可 |
 | claude.ai の Artifact | × | 不可（外部送信がブロックされる） |

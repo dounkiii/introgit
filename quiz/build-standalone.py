@@ -3,6 +3,8 @@
 
     python3 quiz/build-standalone.py            -> quiz/standalone.html（完全なHTML）
     python3 quiz/build-standalone.py --fragment -> 同じ内容を <html>/<head>/<body> 抜きで標準出力
+    python3 quiz/build-standalone.py --submit-mode apps-script -o gas/index.html
+                                                -> 保存先を切り替えた版を任意の場所へ出力
 
 配布やホスティングでファイルを1つにまとめたいときだけ使います。
 編集するのは常に元の4ファイルで、standalone.html は生成物です。
@@ -19,14 +21,22 @@ def read(name: str) -> str:
     return (HERE / name).read_text(encoding="utf-8")
 
 
-def build() -> str:
+def build(submit_mode: str = "") -> str:
     html = read("index.html")
+    config = read("config.js")
+
+    if submit_mode:
+        config = re.sub(r"mode: '[^']*'", "mode: '%s'" % submit_mode, config, count=1)
 
     html = html.replace(
         '<link rel="stylesheet" href="styles.css">',
         "<style>\n" + read("styles.css") + "</style>",
     )
-    for src in ("config.js", "questions.js", "app.js"):
+    html = html.replace(
+        '<script src="config.js"></script>',
+        "<script>\n" + config + "</script>",
+    )
+    for src in ("questions.js", "app.js"):
         html = html.replace(
             '<script src="%s"></script>' % src,
             "<script>\n" + read(src) + "</script>",
@@ -53,14 +63,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fragment", action="store_true",
                         help="<html>/<head>/<body> を含めずに標準出力へ書き出す")
+    parser.add_argument("--submit-mode", default="",
+                        help="config.js の mode を上書きする（off / apps-script / netlify / endpoint）")
+    parser.add_argument("-o", "--out", default="standalone.html",
+                        help="出力先（quiz/ からの相対パス）")
     args = parser.parse_args()
 
-    html = build()
+    html = build(args.submit_mode)
     if args.fragment:
         print(to_fragment(html))
         return
 
-    out = HERE / "standalone.html"
+    out = HERE / args.out
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
     print("wrote %s (%.1f KB)" % (out, out.stat().st_size / 1024))
 
