@@ -4,7 +4,27 @@
 回答は端末の `localStorage` に保存されます。既定では外部へ一切送信せず、
 `config.js` で送信先を設定したときだけ送信します。
 
-## 公開する（Googleスプレッドシートだけで完結する方法）
+## いちばん簡単な公開方法：Googleフォームにする
+
+`gas/CreateForm.gs` を Apps Script に貼って `createQuiz` を1回実行すると、
+15問ぶんのGoogleフォームが自動で作られます。回答は同時に作られる
+スプレッドシートにたまります。ログイン不要のURLが即発行され、
+ホスティングの設定は一切不要です。
+
+1. https://script.google.com/home/projects/create を開く
+2. エディタの中身を消して `gas/CreateForm.gs` を貼り付け、保存
+3. 関数 `createQuiz` を選んで「実行」（初回は承認）
+4. 実行ログに出る「回答用URL」を送る
+
+`gas/CreateForm.gs` は生成物です。質問を変えたら作り直してください。
+
+```bash
+node quiz/gas/build-createform.js
+```
+
+1問ずつページを分ける／分けないは、生成物の先頭 `ONE_QUESTION_PER_PAGE` で切り替えられます。
+
+## 公開する（自作HTMLをApps Scriptで配信する方法）
 
 **ログイン不要のURL** と **回答の自動記録** を、Googleアカウントだけで両方まかなえます。
 Apps Script のウェブアプリはページ自体を配信できるので、他のホスティングは不要です。
@@ -69,7 +89,9 @@ python3 -m http.server 8000
 | `config.js` | **回答の送信先設定**。既定は送信なし |
 | `app.js` | 進行・保存・出力・送信のロジック |
 | `build-standalone.py` | 上記を1枚のHTMLにまとめる（`standalone.html` を生成） |
-| `gas/Code.gs` | Apps Script用。アンケートの配信＋スプレッドシートへの記録 |
+| `gas/CreateForm.gs` | **Googleフォームを自動生成**するスクリプト（生成物） |
+| `gas/build-createform.js` | 上記を `questions.js` から生成する |
+| `gas/Code.gs` | Apps Script用。自作HTMLの配信＋スプレッドシートへの記録 |
 | `gas/index.html` | Apps Scriptに貼る単一HTML（生成物） |
 | `server/apps-script.gs` | 外部ホスティングから回答を受け取る場合の受け口（任意） |
 
@@ -146,6 +168,7 @@ JSON は設問ID・質問文・選択肢一覧・選んだindex・選んだ本�
 
 | 置き場所 | ログイン不要のURL | 回答の保存 |
 | --- | --- | --- |
+| Googleフォーム | ○ | スプレッドシートに自動記録 |
 | Apps Script ウェブアプリ | ○ | スプレッドシートに自動記録 |
 | GitHub Pages | ○ | B（スプレッドシート）のみ |
 | Netlify | ○ | A・B どちらも可 |
