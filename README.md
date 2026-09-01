@@ -195,7 +195,7 @@ NotebookLM連携、複雑なダッシュボード、有料APIへの過剰依存 
 | 経路 | 認証 | 費用 | X Articles（長文記事）の本文 |
 |---|---|---|---|
 | `embed` | 不要 | 無料 | タイトルと冒頭プレビューのみ |
-| `api` | `X_BEARER_TOKEN` | 従量課金 $0.005 / Post | `article` フィールド経由で取得を試行 |
+| `api` | `X_BEARER_TOKEN` | 従量課金 $0.005 / Post | **本文全文が取れる**（`article.plain_text`）|
 
 ```bash
 python tools/fetch_x_post.py https://x.com/<user>/status/<id>
@@ -229,17 +229,31 @@ X は未ログインのHTTP取得を拒否する（投稿ページは `402`、�
 
 `GET /2/tweets/{id}` に `tweet.fields=article,article_title,note_post,...` と
 `expansions=article.cover_media,article.media_entities,...` を付けて取得します。
-公式データディクショナリは `article` を
-「Contains metadata for the Article present in this Tweet / Use this to get the
-text and entities of an Article」と説明しており、記事本文の取得はこの経路に賭けています。
-返ってきた `article` が想定と違う形でも落ちないようにしてあり、本文を組み立てられない
-場合は生の `article` をそのまま表示します（`--json` で全体を確認できます）。
+**実測の結果、`article` に記事本文の全文が入っていることを確認しました。** 返る構造は
+OpenAPI 上 `type: object`（未定義）ですが、実際は次の形でした:
+
+| キー | 内容 |
+|---|---|
+| `title` | 記事タイトル |
+| `plain_text` | **本文全文**（実測 7,831文字）|
+| `preview_text` | 冒頭プレビュー（embed経路と同じ範囲）|
+| `entities.code[]` | コードブロック（`plain_text` には含まれず**分離**されている。位置情報なし）|
+| `entities.tweets[]` / `entities.urls[]` | 埋め込み投稿ID / 記事内リンク |
+| `cover_media` / `media_entities[]` | カバー画像 / 記事内メディアのキー |
+
+`plain_text` はコードブロックを含まないため、本ツールは本文の後ろに
+`entities.code` を「記事内のコードブロック」として続けて出力します。
+`article` が想定と違う形で返ってきても落ちないようにしてあり（`content_state` /
+`blocks` / `text` も受け付ける）、本文を組み立てられない場合は生の `article` を
+そのまま表示します（`--json` で全体を確認できます）。
 
 セットアップ:
 
 1. https://console.x.com でアプリを作成し **Bearer Token** を発行
 2. 従量課金なので**クレジットを購入**（Post read = $0.005/件、同一リソースは
-   24時間UTC内で重複課金なし。サブスクリプション契約は不要）
+   24時間UTC内で重複課金なし。サブスクリプション契約は不要）。購入したクレジットが
+   使えるのは **Pay Per Use** プランのプロジェクトで、Free プランのプロジェクトに
+   繋がったアプリのトークンでは読み取りが 403 `client-not-enrolled` になる
 3. **アプリをプロジェクトに紐付ける**（コンソールの「プロジェクト」）。単独アプリの
    トークンでは v2 が使えず、`GET /2/tweets/{id}` は原因の分かりにくい `503` を返す
    （`GET /2/usage/tweets` を叩くと `403 ... App that is attached to a Project` が出る）
@@ -261,9 +275,11 @@ text and entities of an Article」と説明しており、記事本文の取得�
 
 - **非公開(鍵)アカウント・削除済み・年齢制限付き**の投稿は取得不可。
 - `embed` 経路では **X Articles の記事本文の全文は取得不可**（ログインが必要）。
-- `api` 経路が記事本文を実際に返すかは**トークンでの実測が必要**。X API の Articles
-  ドキュメントには作成・公開（`POST /2/articles/draft`, `POST /2/articles/{id}/publish`）
-  しか無く、読み取りは `article` フィールドのみが手がかりです。
+- コードブロックの**本文中の位置は復元できない**（`entities.code` に位置情報が無い）。
+  本ツールは本文の後にまとめて出力します。
+- X API の Articles ドキュメントには作成・公開（`POST /2/articles/draft`,
+  `POST /2/articles/{id}/publish`）しか記載が無く、読み取りは `article` フィールドが
+  唯一の経路です（構造は未ドキュメント）。
 - リプライツリーやスレッド全体の取得は対象外（単一投稿＋引用/返信元まで）。
 
 ### 検証

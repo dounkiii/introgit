@@ -320,10 +320,13 @@ def normalize_api(raw: dict) -> dict:
 
 
 def _normalize_api_article(data: dict) -> dict:
-    """API の article オブジェクトからタイトルと本文を取り出す。
+    """API の article オブジェクトからタイトル・本文・付随要素を取り出す。
 
-    article の内部構造は OpenAPI 上 `type: object`（未定義）なので、
-    公開されている content_state 形式と素朴な形の両方を受けられるようにする。
+    実測したレスポンスは title / plain_text / preview_text / cover_media /
+    media_entities / entities{code,tweets,urls} を返す。plain_text が本文全文だが
+    コードブロックは含まれず entities.code 側に分離されている（位置情報は無い）。
+    OpenAPI 上 article は `type: object`（未定義）なので、他の形が返ってきても
+    落ちないように content_state / blocks / text も受け付ける。
     """
     art = data.get("article")
     art = art if isinstance(art, dict) else {}
@@ -331,24 +334,47 @@ def _normalize_api_article(data: dict) -> dict:
     title = (art.get("title")
              or (title_obj.get("title") if isinstance(title_obj, dict) else title_obj))
 
-    content_state = art.get("content_state") or art.get("contentState")
     body = None
-    if isinstance(content_state, dict):
-        body = content_state_to_text(content_state)
-    elif isinstance(art.get("blocks"), list):
-        body = content_state_to_text(art)
-    elif isinstance(art.get("text"), str):
-        body = art["text"]
+    if isinstance(art.get("plain_text"), str):
+        body = art["plain_text"].strip()
+    else:
+        content_state = art.get("content_state") or art.get("contentState")
+        if isinstance(content_state, dict):
+            body = content_state_to_text(content_state)
+        elif isinstance(art.get("blocks"), list):
+            body = content_state_to_text(art)
+        elif isinstance(art.get("text"), str):
+            body = art["text"]
 
-    art_id = art.get("id") or art.get("rest_id")
+    art_entities = art.get("entities") if isinstance(art.get("entities"), dict) else {}
+    code_blocks = [c.get("content") or c.get("code", "")
+                   for c in art_entities.get("code", []) if isinstance(c, dict)]
+    embedded = [t.get("id") for t in art_entities.get("tweets", [])
+                if isinstance(t, dict) and t.get("id")]
+
     return {
         "title": title,
-        "url": f"https://x.com/i/article/{art_id}" if art_id else None,
+        "url": _article_url(art, data),
         "body": body,
         "preview": art.get("preview_text"),
+        "code_blocks": code_blocks,
+        "embedded_posts": embedded,
+        "media_count": len(art.get("media_entities") or []),
         # 本文が取れなかった場合に中身を確認できるよう、生の article を残す。
         "raw": None if body else (art or None),
     }
+
+
+def _article_url(art: dict, data: dict) -> str | None:
+    """記事URLを決める。article に ID が無い場合は本文中のリンクから拾う。"""
+    art_id = art.get("id") or art.get("rest_id")
+    if art_id:
+        return f"https://x.com/i/article/{art_id}"
+    for u in (data.get("entities") or {}).get("urls", []):
+        expanded = u.get("expanded_url") or ""
+        if "/i/article/" in expanded:
+            return expanded
+    return None
 
 
 _BLOCK_PREFIX = {
@@ -433,6 +459,16 @@ def render(post: dict) -> str:
             out.append(f"記事URL  : {article['url']}")
         if article.get("body"):
             out += ["", "--- 記事本文 ---", article["body"]]
+            for i, code in enumerate(article.get("code_blocks") or [], 1):
+                out += ["", f"--- 記事内のコードブロック {i} ---", code]
+            extra = []
+            if article.get("media_count"):
+                extra.append(f"画像・動画 {article['media_count']}点")
+            if article.get("embedded_posts"):
+                extra.append("埋め込み投稿 " + ", ".join(
+                    f"https://x.com/i/status/{pid}" for pid in article["embedded_posts"]))
+            if extra:
+                out += ["", "--- 記事内のメディア ---", *[f"  {e}" for e in extra]]
         else:
             if article.get("preview"):
                 out += ["冒頭プレビュー:",

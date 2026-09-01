@@ -153,6 +153,49 @@ def test_normalize_api_with_article_body():
     assert "記事本文" in render(post)
 
 
+def test_normalize_api_article_plain_text():
+    """実測レスポンス形状（plain_text + entities.code）から本文を組み立てること。
+
+    article に ID が無いため、記事URLは本文のリンクから拾う必要がある。
+    """
+    raw = {
+        "data": {
+            "id": "999",
+            "text": "https://t.co/abc",
+            "entities": {"urls": [{"url": "https://t.co/abc",
+                                   "expanded_url": "https://x.com/i/article/777"}]},
+            "article": {
+                "title": "記事タイトル",
+                "plain_text": "本文の全文\n続き",
+                "preview_text": "本文の全",
+                "cover_media": "3_111",
+                "media_entities": ["3_111", "3_222"],
+                "entities": {
+                    "code": [{"code": "print(1)", "content": "```\nprint(1)\n```",
+                              "language": "none"}],
+                    "tweets": [{"id": "555"}],
+                    "urls": [{"text": "https://example.com"}],
+                },
+            },
+        },
+        "includes": {},
+    }
+    post = normalize_api(raw)
+    art = post["article"]
+    assert art["title"] == "記事タイトル"
+    assert art["body"] == "本文の全文\n続き"
+    assert art["url"] == "https://x.com/i/article/777"   # article に ID が無い経路
+    assert art["code_blocks"] == ["```\nprint(1)\n```"]
+    assert art["embedded_posts"] == ["555"]
+    assert art["media_count"] == 2
+    assert art["raw"] is None
+
+    out = render(post)
+    assert "本文の全文" in out
+    assert "コードブロック 1" in out and "print(1)" in out
+    assert "https://x.com/i/status/555" in out
+
+
 def test_normalize_api_unknown_article_shape_keeps_raw():
     """article の構造が想定外でも落ちず、中身を確認できる形で残すこと。"""
     raw = {"data": {"id": "1", "text": "t",
