@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A8 提携申請5枠</title>
+</head>
+<body>
+<!-- 旧Claudeアカウントのアーティファクト 66ae1c56-6264-4027-b94b-70a0cba57b85 から保存 -->
+<title>A8 提携申請5枠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground: #f6f8f6;
+    --surface: #ffffff;
+    --surface-2: #eef2ef;
+    --ink: #16211d;
+    --ink-2: #46564f;
+    --ink-3: #78877f;
+    --line: #d8e0da;
+    --accent: #0d6157;
+    --accent-soft: #e0efea;
+    --pending: #9a6300;
+    --pending-soft: #fbeed3;
+    --done: #0d6157;
+    --done-soft: #d6ece3;
+    --idle: #78877f;
+    --idle-soft: #e7ebe8;
+
+    --display: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+    --body: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101614;
+      --surface: #18211e;
+      --surface-2: #1f2a26;
+      --ink: #e8efeb;
+      --ink-2: #a9b8b1;
+      --ink-3: #7c8b84;
+      --line: #2b3833;
+      --accent: #4fbfa4;
+      --accent-soft: #17302a;
+      --pending: #e0a851;
+      --pending-soft: #33270f;
+      --done: #4fbfa4;
+      --done-soft: #14302a;
+      --idle: #7c8b84;
+      --idle-soft: #232d29;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #101614;
+    --surface: #18211e;
+    --surface-2: #1f2a26;
+    --ink: #e8efeb;
+    --ink-2: #a9b8b1;
+    --ink-3: #7c8b84;
+    --line: #2b3833;
+    --accent: #4fbfa4;
+    --accent-soft: #17302a;
+    --pending: #e0a851;
+    --pending-soft: #33270f;
+    --done: #4fbfa4;
+    --done-soft: #14302a;
+    --idle: #7c8b84;
+    --idle-soft: #232d29;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.75;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.15rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+  }
+
+  /* ---------- header ---------- */
+  header { display: flex; flex-direction: column; gap: .7rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.7rem, 6vw, 2.3rem);
+    line-height: 1.25;
+    letter-spacing: -.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .lede { margin: 0; color: var(--ink-2); max-width: 34em; }
+
+  /* ---------- caveat ---------- */
+  .caveat {
+    background: var(--pending-soft);
+    border-left: 3px solid var(--pending);
+    border-radius: 0 6px 6px 0;
+    padding: .9rem 1.05rem;
+    font-size: .89rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .caveat strong { color: var(--pending); }
+
+  /* ---------- sections ---------- */
+  section { display: flex; flex-direction: column; gap: 1rem; }
+
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: .01em;
+    margin: 0;
+    padding-bottom: .55rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+  }
+  h2 .n {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* ---------- click path ---------- */
+  ol.path {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    counter-reset: step;
+  }
+  ol.path li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 1.6rem 1fr;
+    gap: .75rem;
+    padding: .62rem 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: .94rem;
+  }
+  ol.path li:last-child { border-bottom: 0; }
+  ol.path li::before {
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: .76rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 4px;
+    height: 1.45rem;
+    display: grid;
+    place-items: center;
+    margin-top: .12rem;
+  }
+  ol.path b { font-weight: 700; }
+
+  /* ---------- slot cards ---------- */
+  .slots { display: flex; flex-direction: column; gap: .8rem; }
+
+  .slot {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem 1.05rem 1.05rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+  .slot[data-state="done"] { border-color: var(--done); }
+
+  .slot-top {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    flex-wrap: wrap;
+  }
+
+  .rank {
+    font-family: var(--mono);
+    font-size: .74rem;
+    font-weight: 600;
+    color: var(--ground);
+    background: var(--accent);
+    border-radius: 4px;
+    padding: .12rem .42rem;
+    flex: none;
+    margin-top: .28rem;
+  }
+  .slot[data-rank="1"] .rank { box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  .slot-name {
+    font-family: var(--mono);
+    font-size: .92rem;
+    font-weight: 600;
+    color: var(--ink);
+    word-break: break-all;
+    line-height: 1.5;
+    flex: 1 1 12rem;
+    margin-top: .16rem;
+  }
+
+  .reach {
+    font-family: var(--mono);
+    font-size: .72rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border-radius: 4px;
+    padding: .16rem .45rem;
+    flex: none;
+    margin-top: .24rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .why { margin: 0; font-size: .87rem; color: var(--ink-2); }
+  .why em { color: var(--accent); font-style: normal; font-weight: 700; }
+
+  .kw-label {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .kws { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+  button.kw {
+    font-family: var(--mono);
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid transparent;
+    border-radius: 5px;
+    padding: .26rem .55rem;
+    cursor: pointer;
+    transition: border-color .12s, transform .08s;
+  }
+  button.kw:hover { border-color: var(--accent); }
+  button.kw:active { transform: translateY(1px); }
+  button.kw.copied { border-color: var(--accent); }
+  button.kw.copied::after { content: " ✓"; }
+
+  /* ---------- status control ---------- */
+  .status { display: flex; gap: .35rem; flex-wrap: wrap; }
+  button.st {
+    font-family: var(--body);
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .28rem .72rem;
+    cursor: pointer;
+    transition: background .12s, color .12s, border-color .12s;
+  }
+  button.st:hover { border-color: var(--ink-3); }
+  button.st[aria-pressed="true"][data-v="idle"] {
+    background: var(--idle-soft); color: var(--ink); border-color: var(--idle);
+  }
+  button.st[aria-pressed="true"][data-v="pending"] {
+    background: var(--pending-soft); color: var(--pending); border-color: var(--pending); font-weight: 700;
+  }
+  button.st[aria-pressed="true"][data-v="done"] {
+    background: var(--done-soft); color: var(--done); border-color: var(--done); font-weight: 700;
+  }
+
+  /* ---------- after approval ---------- */
+  .after {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1rem 1.05rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    font-size: .92rem;
+  }
+  .after code {
+    font-family: var(--mono);
+    font-size: .86rem;
+    background: var(--surface-2);
+    border-radius: 4px;
+    padding: .08rem .34rem;
+  }
+  .after .tab {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .warn {
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    font-size: .87rem;
+    color: var(--ink-2);
+    border-left: 3px solid var(--ink-3);
+  }
+  .warn b { color: var(--ink); }
+
+  footer {
+    font-size: .8rem;
+    color: var(--ink-3);
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    font-family: var(--mono);
+    line-height: 1.7;
+  }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">A8.net → GitHub Secrets</div>
+    <h1>換金経路を5枠うめる</h1>
+    <p class="lede">
+      パイプラインは <code style="font-family:var(--mono);font-size:.86rem">AFF_*</code> という5つの空きスロットを持っています。
+      A8 で提携が承認されるとそこに広告リンクが入り、記事とショート動画に CTA が自動で差し込まれます。
+      申請は5件まとめて出してください。順位は「承認後にどれを優先して使うか」の話です。
+    </p>
+  </header>
+
+  <div class="caveat">
+    <strong>画面の文言は保証できません。</strong>
+    この環境から <code style="font-family:var(--mono);font-size:.85rem">a8.net</code> に接続できないため、
+    実際のメニュー名を確認できていません。下の手順は<b>意味で合わせてください</b>
+    （「プログラム検索」が別の名前なら、広告主を探す画面を開く、と読んでください）。
+    違っていたらスクショを送ってもらえれば直します。
+  </div>
+
+  <section>
+    <h2><span class="n">PATH</span> 申請までの流れ</h2>
+    <ol class="path">
+      <li>A8 にログインする（アカウントはすでにあり、note のサイト登録も完了済み）</li>
+      <li><b>プログラム検索</b>（広告主を探す画面）を開く</li>
+      <li>下のキーワードで検索する。タップでコピーできます</li>
+      <li>結果から広告主を選び、<b>提携条件と禁止事項を読む</b>。お金・税金ジャンルは表現の制限が入ることがあります</li>
+      <li><b>提携申請する</b>を押す。「即時提携」ならその場で承認、「審査あり」なら数日〜1週間待ちます</li>
+      <li>5枠ぶん繰り返す。待ち時間が重ならないよう、承認を待たずに次を出してください</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="n">SLOTS</span> 申請する5枠</h2>
+    <div class="slots" id="slots"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">NEXT</span> 承認されたら</h2>
+    <div class="after">
+      <div>広告主の管理画面で<b>広告リンクのURL</b>をコピーして、GitHub に登録します。</div>
+      <div>
+        リポジトリ → <b>Settings</b> → <b>Secrets and variables</b> →
+        <span class="tab">Actions</span> タブ → <b>New repository secret</b>
+      </div>
+      <div>
+        Name には上のスロット名をそのまま入れます（例 <code>AFF_ACCOUNTING_SOFT</code>）。
+        Secret に登録すれば値は暗号化され、このリポジトリが public でも中身は見えません。
+      </div>
+    </div>
+    <div class="warn">
+      <b>Dependabot タブではありません。</b>
+      同じ画面に <code style="font-family:var(--mono);font-size:.85rem">Actions</code> /
+      <code style="font-family:var(--mono);font-size:.85rem">Codespaces</code> /
+      <code style="font-family:var(--mono);font-size:.85rem">Dependabot</code> の3つのタブがあります。
+      ワークフローが読むのは <b>Actions</b> だけです。別のタブに入れると、
+      登録済みに見えるのに実行時は空になります。
+    </div>
+    <div class="warn">
+      <b>ログインIDとパスワードは誰にも渡さないでください。</b>
+      必要なのは広告リンクのURLだけです。A8 は成果報酬の振込先口座に紐づくので、
+      漏れると金銭被害に直結します。
+    </div>
+  </section>
+
+  <footer>
+    進捗はこの端末のブラウザにだけ保存されます（他の人には見えません）。<br>
+    スロット定義の出典: config.yaml の monetization.offers
+  </footer>
+
+</div>
+
+<script>
+  const SLOTS = [
+    {
+      rank: 1,
+      name: "AFF_ACCOUNTING_SOFT",
+      reach: "3カテゴリ",
+      why: "<em>ここだけ通れば動き出します。</em> default に入っている唯一の枠なので、他が全滅しても換金経路が成立します。いま採用待ちの候補（インボイス2割特例の終了 → 会計ソフトの乗り換え需要）が直撃する枠でもあります。",
+      kws: ["確定申告 ソフト", "会計ソフト"]
+    },
+    {
+      rank: 2,
+      name: "AFF_TAX_ADVISOR",
+      reach: "2カテゴリ",
+      why: "会計ソフトと同じ読者から自然につながります。「自分で対応できる → ソフト」「個別判断が必要 → 税理士」の分岐が1本の記事から作れるので、同じコンテンツで2経路持てます。",
+      kws: ["税理士 紹介"]
+    },
+    {
+      rank: 3,
+      name: "AFF_FURUSATO",
+      reach: "1カテゴリ",
+      why: "household 側の経路確保。税・給付金だけに収益源が偏るのを防げます。",
+      kws: ["ふるさと納税"]
+    },
+    {
+      rank: 4,
+      name: "AFF_SECURITIES",
+      reach: "1カテゴリ",
+      why: "後回し。稼げないからではなく、金融商品は将来利益を期待させる表現やリスク説明の規制が乗るため、初売上をとる経路には選びません。運用が安定してから解放します。",
+      kws: ["証券口座", "NISA"]
+    },
+    {
+      rank: 5,
+      name: "AFF_INSURANCE",
+      reach: "1カテゴリ",
+      why: "後回し。保険商品の比較・推奨表現に制限があり、承認時に見る項目が増えます。理由は4番と同じです。",
+      kws: ["保険 無料相談"]
+    }
+  ];
+
+  const STATES = [
+    { v: "idle", label: "未申請" },
+    { v: "pending", label: "審査中" },
+    { v: "done", label: "承認済み" }
+  ];
+
+  const KEY = "a8-slot-status-v1";
+
+  function load() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function save(state) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (e) { /* プライベートウィンドウなどでは保存できない */ }
+  }
+
+  let status = load();
+
+  function render() {
+    const host = document.getElementById("slots");
+    host.textContent = "";
+
+    SLOTS.forEach(function (s) {
+      const cur = status[s.name] || "idle";
+
+      const card = document.createElement("div");
+      card.className = "slot";
+      card.dataset.rank = String(s.rank);
+      card.dataset.state = cur;
+
+      const top = document.createElement("div");
+      top.className = "slot-top";
+      top.innerHTML =
+        '<span class="rank">' + s.rank + '</span>' +
+        '<span class="slot-name">' + s.name + '</span>' +
+        '<span class="reach">' + s.reach + '</span>';
+      card.appendChild(top);
+
+      const why = document.createElement("p");
+      why.className = "why";
+      why.innerHTML = s.why;
+      card.appendChild(why);
+
+      const kwLabel = document.createElement("div");
+      kwLabel.className = "kw-label";
+      kwLabel.textContent = "検索キーワード（タップでコピー）";
+      card.appendChild(kwLabel);
+
+      const kws = document.createElement("div");
+      kws.className = "kws";
+      s.kws.forEach(function (k) {
+        const b = document.createElement("button");
+        b.className = "kw";
+        b.type = "button";
+        b.textContent = k;
+        b.addEventListener("click", function () {
+          copy(k, b);
+        });
+        kws.appendChild(b);
+      });
+      card.appendChild(kws);
+
+      const st = document.createElement("div");
+      st.className = "status";
+      STATES.forEach(function (o) {
+        const b = document.createElement("button");
+        b.className = "st";
+        b.type = "button";
+        b.dataset.v = o.v;
+        b.textContent = o.label;
+        b.setAttribute("aria-pressed", String(cur === o.v));
+        b.addEventListener("click", function () {
+          status[s.name] = o.v;
+          save(status);
+          render();
+        });
+        st.appendChild(b);
+      });
+      card.appendChild(st);
+
+      host.appendChild(card);
+    });
+  }
+
+  function copy(text, btn) {
+    const done = function () {
+      btn.classList.add("copied");
+      setTimeout(function () { btn.classList.remove("copied"); }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+    } else {
+      fallback(text, done);
+    }
+  }
+
+  function fallback(text, done) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      done();
+    } catch (e) { /* コピーできない環境では手で選択してもらう */ }
+  }
+
+  render();
+</script>
+</body>
+</html>
