@@ -209,7 +209,7 @@ def test_normalize_api_unknown_article_shape_keeps_raw():
 
 def test_api_error_hint():
     """踏んだエラーごとに、次にやることが分かる文言を返すこと。"""
-    assert "Bearer Token を再生成" in api_error_hint(401, "Unauthorized")
+    assert "X_BEARER_TOKEN" in api_error_hint(401, "Unauthorized")
     body = ('{"client_id":"1","detail":"you must use keys and tokens from a '
             'developer App that is attached to a Project."}')
     assert "プロジェクト" in api_error_hint(403, body)

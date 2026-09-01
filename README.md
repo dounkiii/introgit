@@ -36,8 +36,10 @@
 │   ├── scorer/               # 100点満点の採点
 │   ├── reporter/             # Markdown / JSON 出力
 │   └── utils/                # 設定・ログ・HTTP・キャッシュ・データモデル
+├── .claude/skills/
+│   └── read-x-post/          # XのURLを貼るだけで読めるスキル（本体実装もここ）
 ├── tools/
-│   └── fetch_x_post.py       # X(Twitter) 投稿URLから内容を取得する単体ツール
+│   └── fetch_x_post.py       # 上記スキルへの互換入口（CLIとして同じ使い方）
 ├── tests/                    # オフライン検証（fixtures + 単体テスト）
 ├── data/                     # JSON出力・キャッシュ（gitignore）
 ├── output/                   # Markdownレポート（gitignore）
@@ -189,6 +191,12 @@ NotebookLM連携、複雑なダッシュボード、有料APIへの過剰依存 
 
 ## 付録: X(Twitter) 投稿URLの読み取り
 
+実装は **スキル** `.claude/skills/read-x-post/` に置いてあり、Claude Code のセッションで
+XのURLを貼るだけで自動的に呼ばれます（`/read-x-post <URL>` と明示的に呼んでもよい）。
+CLIとして直接叩く場合は `tools/fetch_x_post.py`（同じ実装への入口）か、
+`python3 .claude/skills/read-x-post/read_x_post.py <URL>` を使います。
+標準ライブラリのみで動くので、他リポジトリにコピーしてもそのまま動きます。
+
 `tools/fetch_x_post.py` は **投稿URLを渡すだけ**で本文・作者・日時・メディア・引用元・
 添付記事を取得します。取得経路は2つあり、既定では使える方を自動で選びます。
 
@@ -287,3 +295,30 @@ OpenAPI 上 `type: object`（未定義）ですが、実際は次の形でした
 ```bash
 python tests/test_fetch_x_post.py   # ネットワーク不要（pytest でも実行可）
 ```
+
+### 他のセッション・他リポジトリでも使う
+
+スキルの読み込み場所はセッションの種類で違います。
+
+| 使いたい場所 | 置き場所 |
+|---|---|
+| このリポジトリのセッション（ローカル/クラウド共通）| すでに `.claude/skills/read-x-post/` にコミット済み |
+| 自分のマシンの全プロジェクト | `ln -s "$PWD/.claude/skills/read-x-post" ~/.claude/skills/read-x-post` |
+| クラウドセッション全般・Cowork・routines | claude.ai のスキル設定にアップロード（`~/.claude/skills/` は読まれない）|
+
+アップロード用のzipは次で作れます:
+
+```bash
+cd .claude/skills && zip -r ../../read-x-post-skill.zip read-x-post -x '*__pycache__*'
+```
+
+### トークンの置き場所
+
+| 環境 | 置き方 |
+|---|---|
+| クラウドセッション（推奨）| claude.ai/code の環境編集 → **API credentials** → Bearer / `api.x.com` / `Authorization` + `Bearer` + トークン。セッションに鍵が渡らず、プロキシが付与する |
+| ローカル | シェルの環境変数 `X_BEARER_TOKEN`、または `.env`（作業ディレクトリから上へ探索）|
+| どちらも無い | 自動的に無料経路になり、通常の投稿は読める（記事本文は冒頭のみ）|
+
+API credential 方式ではスクリプトは `Authorization` を付けずに送り、プロキシが注入します。
+そのため「トークン未設定＝API不可」とは判定せず、常にAPIを試してから無料経路に落ちます。
