@@ -11,7 +11,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from tools.fetch_x_post import build_token, extract_tweet_id, render  # noqa: E402
+from tools.fetch_x_post import (  # noqa: E402
+    build_token,
+    content_state_to_text,
+    extract_tweet_id,
+    normalize_api,
+    normalize_embed,
+    render,
+)
 
 
 def test_extract_tweet_id():
@@ -41,8 +48,8 @@ def test_build_token():
     assert build_token("1234567890123456789") == "2zqic77uqyk"
 
 
-def test_render_expands_urls_and_article():
-    data = {
+def test_normalize_embed():
+    raw = {
         "id_str": "999",
         "created_at": "2026-08-31T11:00:17.000Z",
         "favorite_count": 12,
@@ -52,24 +59,129 @@ def test_render_expands_urls_and_article():
                                "expanded_url": "https://example.com/article"}]},
         "user": {"name": "テスト", "screen_name": "test_user"},
         "article": {"title": "記事タイトル", "rest_id": "777", "preview_text": "冒頭だけ"},
-        "mediaDetails": [{"type": "photo", "media_url_https": "https://pbs.twimg.com/x.jpg"}],
+        "mediaDetails": [
+            {"type": "photo", "media_url_https": "https://pbs.twimg.com/x.jpg"},
+            {"type": "video", "media_url_https": "https://pbs.twimg.com/thumb.jpg",
+             "video_info": {"variants": [
+                 {"content_type": "video/mp4", "bitrate": 100, "url": "low.mp4"},
+                 {"content_type": "video/mp4", "bitrate": 900, "url": "high.mp4"},
+             ]}},
+        ],
+        "quoted_tweet": {"user": {"screen_name": "quoted_user"}, "text": "引用元の本文"},
     }
-    out = render(data)
-    assert "https://example.com/article" in out
+    post = normalize_embed(raw)
+    assert post["source"] == "embed"
+    assert post["author_handle"] == "test_user"
+    assert post["text"] == "詳しくはこちら https://example.com/article"
+    assert post["media"] == [
+        {"kind": "photo", "url": "https://pbs.twimg.com/x.jpg"},
+        {"kind": "video", "url": "high.mp4"},
+    ]
+    assert post["article"]["url"] == "https://x.com/i/article/777"
+    assert post["article"]["body"] is None          # embed経路は本文を返さない
+    assert post["quoted"]["author"] == "@quoted_user"
+
+    out = render(post)
     assert "https://t.co/abc" not in out
-    assert "@test_user" in out
-    assert "記事タイトル" in out
-    assert "https://pbs.twimg.com/x.jpg" in out
+    assert "記事タイトル" in out and "冒頭だけ" in out
+    assert "high.mp4" in out
 
 
-def test_render_prefers_long_form_text():
-    data = {
+def test_normalize_embed_prefers_long_form_text():
+    raw = {
         "id_str": "1",
         "text": "短縮された本文…",
         "note_tweet": {"note_tweet_results": {"result": {"text": "長文投稿の全文"}}},
         "user": {"name": "n", "screen_name": "n"},
     }
-    assert "長文投稿の全文" in render(data)
+    assert normalize_embed(raw)["text"] == "長文投稿の全文"
+
+
+def test_normalize_api_with_article_body():
+    raw = {
+        "data": {
+            "id": "999",
+            "author_id": "42",
+            "created_at": "2026-08-31T11:00:17.000Z",
+            "text": "記事を書きました https://t.co/abc",
+            "entities": {"urls": [{"url": "https://t.co/abc",
+                                   "expanded_url": "https://x.com/i/article/777"}]},
+            "public_metrics": {"like_count": 5, "retweet_count": 1,
+                               "reply_count": 2, "impression_count": 100},
+            "attachments": {"media_keys": ["k1"]},
+            "referenced_posts": [{"type": "quoted", "id": "555"}],
+            "article": {
+                "id": "777",
+                "title": "記事タイトル",
+                "content_state": {
+                    "blocks": [
+                        {"type": "header-one", "text": "見出し"},
+                        {"type": "unstyled", "text": "本文の段落"},
+                        {"type": "unordered-list-item", "text": "箇条書き"},
+                        {"type": "atomic", "text": " ",
+                         "entity_ranges": [{"key": 0, "offset": 0, "length": 1}]},
+                    ],
+                    "entities": [
+                        {"key": "0", "value": {"type": "markdown",
+                                               "data": {"markdown": "```py\\nprint(1)\\n```"}}},
+                    ],
+                },
+            },
+        },
+        "includes": {
+            "users": [{"id": "42", "name": "テスト", "username": "test_user"},
+                      {"id": "43", "name": "引用", "username": "quoted_user"}],
+            "media": [{"media_key": "k1", "type": "photo",
+                       "url": "https://pbs.twimg.com/x.jpg"}],
+            "tweets": [{"id": "555", "author_id": "43", "text": "引用元の本文"}],
+        },
+    }
+    post = normalize_api(raw)
+    assert post["source"] == "api"
+    assert post["author_handle"] == "test_user"
+    assert post["text"] == "記事を書きました https://x.com/i/article/777"
+    assert post["metrics"]["♥"] == 5
+    assert post["media"] == [{"kind": "photo", "url": "https://pbs.twimg.com/x.jpg"}]
+    assert post["article"]["title"] == "記事タイトル"
+    assert post["article"]["url"] == "https://x.com/i/article/777"
+    assert "# 見出し" in post["article"]["body"]
+    assert "- 箇条書き" in post["article"]["body"]
+    assert "print(1)" in post["article"]["body"]
+    assert post["article"]["raw"] is None           # 本文が取れたので生データは持たない
+    assert post["quoted"] == {"author": "@quoted_user", "text": "引用元の本文"}
+    assert "記事本文" in render(post)
+
+
+def test_normalize_api_unknown_article_shape_keeps_raw():
+    """article の構造が想定外でも落ちず、中身を確認できる形で残すこと。"""
+    raw = {"data": {"id": "1", "text": "t",
+                    "article": {"something_new": {"nested": 1}}},
+           "includes": {}}
+    post = normalize_api(raw)
+    assert post["article"]["body"] is None
+    assert post["article"]["raw"] == {"something_new": {"nested": 1}}
+    assert "article の中身" in render(post)
+
+
+def test_content_state_to_text_atomic_entities():
+    cs = {
+        "blocks": [
+            {"type": "atomic", "text": " ", "entity_ranges": [{"key": 0}]},
+            {"type": "atomic", "text": " ", "entity_ranges": [{"key": 1}]},
+            {"type": "atomic", "text": " ", "entity_ranges": [{"key": 2}]},
+            {"type": "blockquote", "text": "引用"},
+        ],
+        "entities": [
+            {"key": "0", "value": {"type": "image", "data": {"caption": "図1"}}},
+            {"key": "1", "value": {"type": "post", "data": {"post_id": "123"}}},
+            {"key": "2", "value": {"type": "divider", "data": {}}},
+        ],
+    }
+    text = content_state_to_text(cs)
+    assert "![図1]" in text
+    assert "123" in text
+    assert "---" in text
+    assert "> 引用" in text
 
 
 if __name__ == "__main__":

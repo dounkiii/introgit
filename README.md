@@ -189,15 +189,19 @@ NotebookLM連携、複雑なダッシュボード、有料APIへの過剰依存 
 
 ## 付録: X(Twitter) 投稿URLの読み取り
 
-`tools/fetch_x_post.py` は **投稿URLを渡すだけ**で本文・作者・日時・メディア・引用元を
-取得します。X は未ログインのHTTP取得を拒否する（`402` / `404`）ため、
-埋め込みウィジェット（Embedded Tweet）が公開利用している
-`cdn.syndication.twimg.com/tweet-result` を使います。**APIキー・ログイン不要**です。
+`tools/fetch_x_post.py` は **投稿URLを渡すだけ**で本文・作者・日時・メディア・引用元・
+添付記事を取得します。取得経路は2つあり、既定では使える方を自動で選びます。
+
+| 経路 | 認証 | 費用 | X Articles（長文記事）の本文 |
+|---|---|---|---|
+| `embed` | 不要 | 無料 | タイトルと冒頭プレビューのみ |
+| `api` | `X_BEARER_TOKEN` | 従量課金 $0.005 / Post | `article` フィールド経由で取得を試行 |
 
 ```bash
 python tools/fetch_x_post.py https://x.com/<user>/status/<id>
-python tools/fetch_x_post.py <id> --json      # 生JSONをそのまま出力
-python tools/fetch_x_post.py <url> --lang en  # 取得言語の指定
+python tools/fetch_x_post.py <id> --source api    # X API を明示（トークン必須）
+python tools/fetch_x_post.py <id> --source embed  # 無料経路に固定
+python tools/fetch_x_post.py <id> --json          # 生レスポンスをそのまま出力
 ```
 
 対応する入力形式: `x.com/<user>/status/<id>` / `twitter.com/...` /
@@ -207,18 +211,48 @@ python tools/fetch_x_post.py <url> --lang en  # 取得言語の指定
 
 | 項目 | 備考 |
 |---|---|
-| 本文 | `t.co` 短縮URLを展開。長文投稿（note tweet）は全文 |
-| 作者・投稿日時・♥数・返信数 | — |
+| 本文 | `t.co` 短縮URLを展開。長文投稿（note post）は全文 |
+| 作者・投稿日時・エンゲージメント | API経路では表示数も取得 |
 | 画像 / 動画 / GIF | 動画は最高ビットレートのmp4 URL |
 | 引用リポスト元の本文 | — |
-| X Articles（長文記事） | タイトル・記事URL・冒頭プレビュー |
+| X Articles | タイトル・記事URL・本文（API経路）/ 冒頭プレビュー（embed経路）|
+
+### 経路1: embed（キー不要・無料）
+
+X は未ログインのHTTP取得を拒否する（投稿ページは `402`、記事ページは `404`）ため、
+埋め込みウィジェット（Embedded Tweet）が公開利用している
+`cdn.syndication.twimg.com/tweet-result` を使います。このエンドポイントは投稿IDから
+算出した `token` を要求するため、`Number.prototype.toString(36)`（V8の基数変換）を
+再現して付与しています。
+
+### 経路2: X API v2（`X_BEARER_TOKEN`）
+
+`GET /2/tweets/{id}` に `tweet.fields=article,article_title,note_post,...` と
+`expansions=article.cover_media,article.media_entities,...` を付けて取得します。
+公式データディクショナリは `article` を
+「Contains metadata for the Article present in this Tweet / Use this to get the
+text and entities of an Article」と説明しており、記事本文の取得はこの経路に賭けています。
+返ってきた `article` が想定と違う形でも落ちないようにしてあり、本文を組み立てられない
+場合は生の `article` をそのまま表示します（`--json` で全体を確認できます）。
+
+セットアップ:
+
+1. https://console.x.com でアプリを作成し **Bearer Token** を発行
+2. 従量課金なので**クレジットを購入**（Post read = $0.005/件、同一リソースは
+   24時間UTC内で重複課金なし。サブスクリプション契約は不要）
+3. `.env` に `X_BEARER_TOKEN=...` を設定（`X_BEARER_TOKEN=... python tools/...` でも可）
+
+`expansions` で引用元投稿やメディアも取得するため、1回の呼び出しで複数リソース分
+（＝$0.005 × 件数）課金されます。費用を最小にしたい場合は `--source embed` を使ってください。
 
 ### 制限
 
-- **非公開(鍵)アカウント・削除済み・年齢制限付き**の投稿は取得不可（`404`）。
-- **X Articles の記事本文の全文は取得不可。** 公開されているのはタイトルと
-  冒頭プレビューのみで、全文閲覧にはログインが必要です。
-- リプライツリーやスレッド全体の取得は対象外（単一投稿＋引用元まで）。
+- **非公開(鍵)アカウント・削除済み・年齢制限付き**の投稿は取得不可。
+- `embed` 経路では **X Articles の記事本文の全文は取得不可**（ログインが必要）。
+- `api` 経路が記事本文を実際に返すかは**トークンでの実測が必要**。X API の Articles
+  ドキュメントには作成・公開（`POST /2/articles/draft`, `POST /2/articles/{id}/publish`）
+  しか無く、読み取りは `article` フィールドのみが手がかりです。
+- リプライツリーやスレッド全体の取得は対象外（単一投稿＋引用/返信元まで）。
 
 ### 検証
 
