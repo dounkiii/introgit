@@ -36,7 +36,9 @@
 │   ├── scorer/               # 100点満点の採点
 │   ├── reporter/             # Markdown / JSON 出力
 │   └── utils/                # 設定・ログ・HTTP・キャッシュ・データモデル
-├── tests/fixtures/           # オフライン検証用のサンプルデータ
+├── tools/
+│   └── fetch_x_post.py       # X(Twitter) 投稿URLから内容を取得する単体ツール
+├── tests/                    # オフライン検証（fixtures + 単体テスト）
 ├── data/                     # JSON出力・キャッシュ（gitignore）
 ├── output/                   # Markdownレポート（gitignore）
 └── logs/                     # 実行ログ（gitignore）
@@ -182,3 +184,44 @@ crontab -e
 WordPress/note/X への自動投稿、記事全文の自動生成、完全自動アフィリエイト、
 NotebookLM連携、複雑なダッシュボード、有料APIへの過剰依存 —— これらは対象外です。
 まずは「良いネタが見つかるか」の検証を最優先しています。
+
+---
+
+## 付録: X(Twitter) 投稿URLの読み取り
+
+`tools/fetch_x_post.py` は **投稿URLを渡すだけ**で本文・作者・日時・メディア・引用元を
+取得します。X は未ログインのHTTP取得を拒否する（`402` / `404`）ため、
+埋め込みウィジェット（Embedded Tweet）が公開利用している
+`cdn.syndication.twimg.com/tweet-result` を使います。**APIキー・ログイン不要**です。
+
+```bash
+python tools/fetch_x_post.py https://x.com/<user>/status/<id>
+python tools/fetch_x_post.py <id> --json      # 生JSONをそのまま出力
+python tools/fetch_x_post.py <url> --lang en  # 取得言語の指定
+```
+
+対応する入力形式: `x.com/<user>/status/<id>` / `twitter.com/...` /
+`x.com/i/web/status/<id>` / 数値IDのみ（クエリ文字列付きも可）。
+
+出力に含まれるもの:
+
+| 項目 | 備考 |
+|---|---|
+| 本文 | `t.co` 短縮URLを展開。長文投稿（note tweet）は全文 |
+| 作者・投稿日時・♥数・返信数 | — |
+| 画像 / 動画 / GIF | 動画は最高ビットレートのmp4 URL |
+| 引用リポスト元の本文 | — |
+| X Articles（長文記事） | タイトル・記事URL・冒頭プレビュー |
+
+### 制限
+
+- **非公開(鍵)アカウント・削除済み・年齢制限付き**の投稿は取得不可（`404`）。
+- **X Articles の記事本文の全文は取得不可。** 公開されているのはタイトルと
+  冒頭プレビューのみで、全文閲覧にはログインが必要です。
+- リプライツリーやスレッド全体の取得は対象外（単一投稿＋引用元まで）。
+
+### 検証
+
+```bash
+python tests/test_fetch_x_post.py   # ネットワーク不要（pytest でも実行可）
+```
