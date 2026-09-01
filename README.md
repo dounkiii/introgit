@@ -210,6 +210,7 @@ python tools/fetch_x_post.py https://x.com/<user>/status/<id>
 python tools/fetch_x_post.py <id> --source api    # X API を明示（トークン必須）
 python tools/fetch_x_post.py <id> --source embed  # 無料経路に固定
 python tools/fetch_x_post.py <id> --json          # 生レスポンスをそのまま出力
+python tools/fetch_x_post.py --check              # 記事本文まで読める状態か診断（URL不要）
 ```
 
 対応する入力形式: `x.com/<user>/status/<id>` / `twitter.com/...` /
@@ -317,8 +318,13 @@ cd .claude/skills && zip -r ../../read-x-post-skill.zip read-x-post -x '*__pycac
 | 環境 | 置き方 |
 |---|---|
 | クラウドセッション（推奨）| claude.ai/code の環境編集 → **API credentials** → Bearer / `api.x.com` / `Authorization` + `Bearer` + トークン。セッションに鍵が渡らず、プロキシが付与する |
-| ローカル | シェルの環境変数 `X_BEARER_TOKEN`、または `.env`（作業ディレクトリから上へ探索）|
+| クラウドセッション（簡単）| 同じ環境編集画面の **Environment variables** に `X_BEARER_TOKEN=...` を1行。管理者権限は不要だが、値はセッションから見える |
+| ローカル（全プロジェクト）| `~/.claude/settings.json` の `env` に `X_BEARER_TOKEN`、または `~/.claude/.env` |
+| ローカル（このリポジトリだけ）| リポジトリの `.env`（作業ディレクトリから上へ探索）|
 | どちらも無い | 自動的に無料経路になり、通常の投稿は読める（記事本文は冒頭のみ）|
 
 API credential 方式ではスクリプトは `Authorization` を付けずに送り、プロキシが注入します。
 そのため「トークン未設定＝API不可」とは判定せず、常にAPIを試してから無料経路に落ちます。
+
+設定できたかどうかは `--check` で確かめられます（トークンの出所と、API経路・無料経路の
+それぞれが使えるかを表示します）。

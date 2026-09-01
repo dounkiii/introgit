@@ -25,6 +25,9 @@ python3 "$CLAUDE_SKILL_DIR/read_x_post.py" <投稿URL>
 | `--source embed` | X API を使わず無料経路に固定する（課金を避けたいとき）|
 | `--source api` | API 経路に固定し、失敗を隠さず出す（切り分け用）|
 | `--json` | 生レスポンスをそのまま出す（表示が想定と違うときの確認用）|
+| `--check` | いまのセッションで記事本文まで読めるかを診断する（URL不要。API疎通に $0.005 かかる）|
+
+「記事本文が読めない」と言われたら、まず `--check` を実行して認証状態を示す。
 
 入力は `https://x.com/<user>/status/<id>` / `twitter.com/...` /
 `x.com/i/web/status/<id>` / 数値IDのみ、いずれも可（クエリ文字列付きも可）。
@@ -54,8 +57,9 @@ API 経路の認証は2通りある。どちらも無い環境では自動的に
    claude.ai/code の環境編集 → **API credentials** → Add credential →
    種別 Bearer / Allowed websites `api.x.com` / ヘッダ `Authorization` +
    prefix `Bearer` + 値にトークン。以後そのenv内の全セッションで有効。
-2. **環境変数 `X_BEARER_TOKEN`**（ローカル）
-   シェルの環境変数、または作業ディレクトリから上へ探索して見つかる `.env`。
+2. **環境変数 `X_BEARER_TOKEN`**
+   探索順は ①環境変数（Claude Code の `settings.json` の `env` もここに現れる）→
+   ②作業ディレクトリから上へ辿って見つかる `.env` → ③`~/.claude/.env`。
 
 ## つまずいたときの判断
 

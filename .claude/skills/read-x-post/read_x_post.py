@@ -126,22 +126,42 @@ def _carry(tail: list[str], digits: str) -> bool:
     return True
 
 
-def bearer_token() -> str | None:
-    """環境変数、無ければカレント以下の .env から Bearer トークンを読む。
+def bearer_token() -> tuple[str | None, str]:
+    """(トークン, 見つけた場所) を返す。見つからない場合は (None, 説明) を返す。
 
-    クラウド環境の API credential を使う構成ではトークンは存在しない（プロキシが付ける）。
+    探索順:
+      1. 環境変数 X_BEARER_TOKEN
+         （Claude Code の settings.json の `env` もここに現れる）
+      2. 作業ディレクトリから上へ辿って最初に見つかった .env
+      3. ~/.claude/.env （マシン全体で1か所にまとめたい場合）
+
+    クラウド環境の API credential を使う構成ではトークンは存在しない。
+    その場合はプロキシが Authorization を注入するため、None でもAPIを試す。
     """
     token = (os.getenv(BEARER_ENV) or "").strip()
     if token:
-        return token
-    for directory in [Path.cwd(), *Path.cwd().parents]:
-        env_file = directory / ".env"
-        if env_file.is_file():
-            for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
-                key, sep, value = line.partition("=")
-                if sep and key.strip() == BEARER_ENV:
-                    return value.strip().strip('"').strip("'") or None
-            break
+        return token, f"環境変数 {BEARER_ENV}"
+
+    candidates = [d / ".env" for d in [Path.cwd(), *Path.cwd().parents]]
+    candidates.append(Path.home() / ".claude" / ".env")
+    for env_file in candidates:
+        value = _read_env_file(env_file)
+        if value:
+            return value, str(env_file)
+    return None, "未設定（クラウド環境の API credential があればプロキシが付与）"
+
+
+def _read_env_file(env_file: Path) -> str | None:
+    """.env から X_BEARER_TOKEN の値を読む。読めない場合は None。"""
+    try:
+        if not env_file.is_file():
+            return None
+        for line in env_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            key, sep, value = line.partition("=")
+            if sep and key.strip() == BEARER_ENV:
+                return value.strip().strip('"').strip("'") or None
+    except OSError:
+        return None
     return None
 
 
@@ -515,7 +535,7 @@ def load_post(tweet_id: str, source: str = "auto", lang: str = "ja") -> tuple[di
     """
     if source in ("auto", "api"):
         try:
-            raw = fetch_api(tweet_id, bearer_token())
+            raw = fetch_api(tweet_id, bearer_token()[0])
             if raw.get("data"):
                 return normalize_api(raw), raw
             raise RuntimeError(
@@ -532,14 +552,53 @@ def load_post(tweet_id: str, source: str = "auto", lang: str = "ja") -> tuple[di
     return normalize_embed(raw), raw
 
 
+def check_setup() -> int:
+    """いまこのセッションで記事本文まで読めるかを実際に叩いて確かめる。"""
+    token, where = bearer_token()
+    print(f"トークン : {where}")
+    print("API経路  : ", end="", flush=True)
+    try:
+        # 記事付きの投稿ではなく軽い既知の投稿で認証だけを確認する。
+        fetch_api("20", token)
+        print("OK（X API v2 が使える → X Articles の本文全文まで読めます）")
+        api_ok = True
+    except Exception as exc:  # noqa: BLE001
+        print(f"NG\n  {exc}")
+        api_ok = False
+
+    print("無料経路 : ", end="", flush=True)
+    try:
+        fetch_embed("20", lang="en")
+        print("OK（通常の投稿は読めます。記事は冒頭プレビューまで）")
+    except Exception as exc:  # noqa: BLE001
+        print(f"NG\n  {exc}")
+        return 1
+
+    if not api_ok:
+        print("\n記事本文まで読めるようにするには、次のどれか1つを設定してください:")
+        print("  - クラウド環境の API credential: Bearer / api.x.com / "
+              "Authorization + Bearer（セッションに鍵が渡らない）")
+        print(f"  - クラウド環境の Environment variables に {BEARER_ENV}=...")
+        print(f"  - ローカル: ~/.claude/settings.json の env、または ~/.claude/.env に "
+              f"{BEARER_ENV}=...")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="X(Twitter) の投稿URLから内容を取得する")
-    ap.add_argument("url", help="投稿URL または 投稿ID")
+    ap.add_argument("url", nargs="?", help="投稿URL または 投稿ID")
+    ap.add_argument("--check", action="store_true",
+                    help="取得経路と認証の状態を診断する（URLは不要）")
     ap.add_argument("--source", choices=("auto", "api", "embed"), default="auto",
                     help="取得経路（既定: auto = API を試し、失敗したら embed）")
     ap.add_argument("--json", action="store_true", help="整形せずJSONをそのまま出力")
     ap.add_argument("--lang", default="ja", help="embed経路の取得言語（既定: ja）")
     args = ap.parse_args(argv)
+
+    if args.check:
+        return check_setup()
+    if not args.url:
+        ap.error("投稿URL または 投稿ID を指定してください（診断は --check）")
 
     try:
         tweet_id = extract_tweet_id(args.url)
