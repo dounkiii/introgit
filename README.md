@@ -240,7 +240,19 @@ text and entities of an Article」と説明しており、記事本文の取得�
 1. https://console.x.com でアプリを作成し **Bearer Token** を発行
 2. 従量課金なので**クレジットを購入**（Post read = $0.005/件、同一リソースは
    24時間UTC内で重複課金なし。サブスクリプション契約は不要）
-3. `.env` に `X_BEARER_TOKEN=...` を設定（`X_BEARER_TOKEN=... python tools/...` でも可）
+3. **アプリをプロジェクトに紐付ける**（コンソールの「プロジェクト」）。単独アプリの
+   トークンでは v2 が使えず、`GET /2/tweets/{id}` は原因の分かりにくい `503` を返す
+   （`GET /2/usage/tweets` を叩くと `403 ... App that is attached to a Project` が出る）
+4. `.env` に `X_BEARER_TOKEN=...` を設定（`X_BEARER_TOKEN=... python tools/...` でも可）
+
+主なエラーと対処はツール側が案内します（`api_error_hint`）:
+
+| HTTP | 原因 |
+|---|---|
+| 401 | トークンが無効・失効 |
+| 403 (`attached to a Project`) | アプリがプロジェクト未紐付け |
+| 503 (`/2/tweets/{id}`) | 障害、またはプロジェクト未紐付け |
+| 402 / 403 / 429 | クレジット残高切れ・利用上限 |
 
 `expansions` で引用元投稿やメディアも取得するため、1回の呼び出しで複数リソース分
 （＝$0.005 × 件数）課金されます。費用を最小にしたい場合は `--source embed` を使ってください。

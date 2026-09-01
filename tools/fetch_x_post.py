@@ -174,8 +174,28 @@ def fetch_api(tweet_id: str, token: str) -> dict:
         timeout=25,
     )
     if resp.status_code != 200:
-        raise RuntimeError(f"X API {resp.status_code}: {resp.text[:300]}")
+        raise RuntimeError(f"X API {resp.status_code}: {resp.text[:300]}\n"
+                           f"  → {api_error_hint(resp.status_code, resp.text)}")
     return resp.json()
+
+
+def api_error_hint(status: int, body: str) -> str:
+    """X API のエラーに対して、実際に踏んだ原因と対処を返す。"""
+    if status == 401:
+        return (f"{BEARER_ENV} が無効です。console.x.com のアプリ → "
+                "「キーとトークン」で Bearer Token を再生成してください。")
+    if "attached to a Project" in body:
+        return ("アプリがプロジェクトに紐付いていません。console.x.com の"
+                "「プロジェクト」でプロジェクトを作成し、アプリを追加してください。")
+    if status == 503:
+        # GET /2/tweets/{id} はプロジェクト未紐付けでも 403 ではなく 503 を返す。
+        return ("一時的な障害か、アプリがプロジェクトに紐付いていない可能性があります。"
+                "`curl -H \"Authorization: Bearer $X_BEARER_TOKEN\" "
+                "https://api.x.com/2/usage/tweets` で本当の原因を確認できます。")
+    if status in (402, 403, 429) or "credit" in body.lower() or "usage" in body.lower():
+        return ("クレジット残高または利用上限に達している可能性があります。"
+                "console.x.com の残高と支出上限を確認してください。")
+    return "詳細は https://docs.x.com/x-api/fundamentals/errors を参照してください。"
 
 
 # --------------------------------------------------------------------------- #

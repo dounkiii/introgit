@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.fetch_x_post import (  # noqa: E402
+    api_error_hint,
     build_token,
     content_state_to_text,
     extract_tweet_id,
@@ -161,6 +162,17 @@ def test_normalize_api_unknown_article_shape_keeps_raw():
     assert post["article"]["body"] is None
     assert post["article"]["raw"] == {"something_new": {"nested": 1}}
     assert "article の中身" in render(post)
+
+
+def test_api_error_hint():
+    """踏んだエラーごとに、次にやることが分かる文言を返すこと。"""
+    assert "Bearer Token を再生成" in api_error_hint(401, "Unauthorized")
+    body = ('{"client_id":"1","detail":"you must use keys and tokens from a '
+            'developer App that is attached to a Project."}')
+    assert "プロジェクト" in api_error_hint(403, body)
+    # GET /2/tweets/{id} はプロジェクト未紐付けでも 503 を返す
+    assert "紐付いていない" in api_error_hint(503, '{"detail":"Service Unavailable"}')
+    assert "クレジット" in api_error_hint(402, '{"detail":"insufficient credit"}')
 
 
 def test_content_state_to_text_atomic_entities():
